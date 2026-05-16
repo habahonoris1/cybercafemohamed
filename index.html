@@ -1,0 +1,3837 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flybox Vouchers — Orange Guinée</title>
+
+<!-- PWA Meta -->
+<meta name="application-name" content="Flybox Vouchers">
+<meta name="description" content="Gestion de vouchers WiFi Flybox — Orange Guinée">
+<meta name="theme-color" content="#D94F00">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Flybox">
+<meta name="msapplication-TileColor" content="#D94F00">
+
+<!-- Icône SVG générée inline -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23D94F00'/%3E%3Crect width='512' height='512' rx='110' fill='url(%23g)'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23FF7020'/%3E%3Cstop offset='1' stop-color='%23A03000'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='256' cy='330' r='38' fill='white'/%3E%3Cpath d='M170 255 Q256 190 342 255' stroke='white' stroke-width='34' fill='none' stroke-linecap='round'/%3E%3Cpath d='M110 195 Q256 110 402 195' stroke='white' stroke-width='34' fill='none' stroke-linecap='round'/%3E%3Cpath d='M60 140 Q256 40 452 140' stroke='rgba(255,255,255,.4)' stroke-width='30' fill='none' stroke-linecap='round'/%3E%3Ctext x='256' y='470' text-anchor='middle' font-family='Arial Black,sans-serif' font-size='88' font-weight='900' fill='rgba(255,255,255,.22)' letter-spacing='4'%3EFBX%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23D94F00'/%3E%3Ccircle cx='256' cy='330' r='38' fill='white'/%3E%3Cpath d='M170 255 Q256 190 342 255' stroke='white' stroke-width='34' fill='none' stroke-linecap='round'/%3E%3Cpath d='M110 195 Q256 110 402 195' stroke='white' stroke-width='34' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<style>
+:root{
+  /* ── Blanc cassé bold ── */
+  --obs:#EDEAE2;--obs2:#FFFFFF;--obs3:#E8E3D8;--obs4:#DDD7C8;--obs5:#D0C9B8;
+  --gold:#A07820;--goldd:rgba(160,120,32,.13);--goldb:rgba(160,120,32,.35);
+  --orng:#D94F00;--orngd:rgba(217,79,0,.11);--orngb:rgba(217,79,0,.32);
+  --txt:#111009;--dim:#58504A;--mut:#A8A098;
+  --gb:rgba(0,0,0,.11);--glass:rgba(0,0,0,.05);
+  --ok:#186B3A;--okd:rgba(24,107,58,.11);--okb:rgba(24,107,58,.32);
+  --err:#992218;--errd:rgba(153,34,24,.11);--errb:rgba(153,34,24,.32);
+  --info:#145D88;--infod:rgba(20,93,136,.11);--infob:rgba(20,93,136,.32);
+  --r:14px;--rs:9px;
+  /* 3D shadow layers */
+  --sh-card: 0 1px 0 rgba(255,255,255,.9) inset,
+             0 -1px 0 rgba(0,0,0,.08) inset,
+             0 4px 0 rgba(0,0,0,.10),
+             0 8px 20px rgba(0,0,0,.10),
+             0 16px 40px rgba(0,0,0,.06);
+  --sh-btn:  0 1px 0 rgba(255,255,255,.25) inset,
+             0 -2px 0 rgba(0,0,0,.22) inset,
+             0 4px 0 rgba(0,0,0,.18),
+             0 8px 16px rgba(0,0,0,.14);
+  --sh-btn-press: 0 1px 0 rgba(255,255,255,.2) inset,
+                  0 -1px 0 rgba(0,0,0,.2) inset,
+                  0 1px 0 rgba(0,0,0,.15),
+                  0 2px 6px rgba(0,0,0,.10);
+  --sh-stat: 0 2px 0 rgba(255,255,255,.85) inset,
+             0 -2px 0 rgba(0,0,0,.10) inset,
+             0 6px 0 rgba(0,0,0,.12),
+             0 12px 28px rgba(0,0,0,.09);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--obs);color:var(--txt);min-height:100vh;overflow-x:hidden}
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 55% 45% at 0%   0%,  rgba(217,79,0,.13)   0%,transparent 55%),
+    radial-gradient(ellipse 45% 55% at 100% 100%, rgba(160,120,32,.13) 0%,transparent 55%),
+    radial-gradient(ellipse 80% 60% at 50%  50%,  rgba(255,255,255,.7) 0%,transparent 70%)}
+
+/* ── HEADER ── */
+header{position:relative;z-index:20;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;
+  background:linear-gradient(180deg,#FFFFFF 0%,#F5F0E8 100%);
+  border-bottom:2px solid rgba(0,0,0,.10);backdrop-filter:blur(24px);
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,
+             0 4px 0 rgba(0,0,0,.08),
+             0 8px 24px rgba(0,0,0,.09)}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-ico{width:40px;height:40px;border-radius:11px;background:linear-gradient(145deg,#FF7020,var(--orng));
+  display:grid;place-items:center;font-size:20px;flex-shrink:0;
+  box-shadow:0 1px 0 rgba(255,255,255,.25) inset,
+             0 -2px 0 rgba(0,0,0,.25) inset,
+             0 4px 0 #A03800,
+             0 8px 20px rgba(217,79,0,.40)}
+.logo-t{font-family:'Cinzel',serif;font-size:14px;font-weight:700;letter-spacing:.04em;color:var(--txt)}
+.logo-t{font-family:'Cinzel',serif;font-size:13px;font-weight:700;letter-spacing:.04em}
+.logo-s{font-size:9px;color:var(--orng);text-transform:uppercase;letter-spacing:.13em;margin-top:2px}
+.hnav{display:flex;gap:7px;align-items:center}
+.sync-dot{width:8px;height:8px;border-radius:50%;margin-left:4px;flex-shrink:0;transition:background .3s}
+.sync-dot.ok{background:#27AE60;box-shadow:0 0 6px rgba(39,174,96,.6)}
+.sync-dot.off{background:var(--mut)}
+.sync-dot.err{background:var(--err);box-shadow:0 0 6px rgba(192,57,43,.6)}
+
+/* ── MAIN ── */
+main{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:34px 20px 80px}
+.view{display:none;animation:fi .32s ease}
+.view.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:var(--rs);
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;
+  border:none;outline:none;transition:all .1s;white-space:nowrap;text-decoration:none;
+  position:relative;top:0}
+.btn-orange{background:linear-gradient(180deg,#FF7020 0%,var(--orng) 55%,#BF4400 100%);color:#fff;
+  box-shadow:0 1px 0 rgba(255,255,255,.25) inset,
+             0 -2px 0 rgba(0,0,0,.22) inset,
+             0 4px 0 #8B3200,
+             0 8px 18px rgba(217,79,0,.35)}
+.btn-orange:hover{top:-2px;
+  box-shadow:0 1px 0 rgba(255,255,255,.25) inset,
+             0 -2px 0 rgba(0,0,0,.22) inset,
+             0 6px 0 #8B3200,
+             0 12px 24px rgba(217,79,0,.45)}
+.btn-orange:active{top:2px;
+  box-shadow:0 1px 0 rgba(255,255,255,.2) inset,
+             0 -1px 0 rgba(0,0,0,.2) inset,
+             0 1px 0 #8B3200,
+             0 3px 8px rgba(217,79,0,.25)}
+.btn-gold{background:linear-gradient(180deg,#D4A840 0%,var(--gold) 55%,#7A5A10 100%);color:#fff;
+  box-shadow:0 1px 0 rgba(255,255,255,.25) inset,
+             0 -2px 0 rgba(0,0,0,.22) inset,
+             0 4px 0 #5A4010,
+             0 8px 18px rgba(160,120,32,.35)}
+.btn-gold:hover{top:-2px;
+  box-shadow:0 1px 0 rgba(255,255,255,.25) inset,
+             0 -2px 0 rgba(0,0,0,.22) inset,
+             0 6px 0 #5A4010,
+             0 12px 24px rgba(160,120,32,.45)}
+.btn-gold:active{top:2px;
+  box-shadow:0 1px 0 rgba(255,255,255,.2) inset,0 1px 0 #5A4010}
+.btn-ghost{background:linear-gradient(180deg,#FFFFFF 0%,var(--obs3) 100%);
+  border:1px solid var(--gb);color:var(--dim);
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,
+             0 -1px 0 rgba(0,0,0,.08) inset,
+             0 2px 0 rgba(0,0,0,.10),
+             0 4px 10px rgba(0,0,0,.07)}
+.btn-ghost:hover{top:-1px;color:var(--txt);
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,
+             0 -1px 0 rgba(0,0,0,.08) inset,
+             0 4px 0 rgba(0,0,0,.12),
+             0 8px 16px rgba(0,0,0,.10)}
+.btn-ghost:active{top:1px;box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 1px 0 rgba(0,0,0,.08)}
+.btn-ok{background:linear-gradient(180deg,#2ECC71 0%,var(--ok) 100%);color:#fff;
+  box-shadow:0 1px 0 rgba(255,255,255,.2) inset,0 -2px 0 rgba(0,0,0,.2) inset,
+             0 4px 0 #0E5228,0 8px 16px rgba(24,107,58,.3)}
+.btn-ok:hover{top:-2px}
+.btn-ok:active{top:2px;box-shadow:none}
+.btn-danger{background:linear-gradient(180deg,#E74C3C 0%,var(--err) 100%);color:#fff;
+  box-shadow:0 1px 0 rgba(255,255,255,.2) inset,0 -2px 0 rgba(0,0,0,.2) inset,
+             0 4px 0 #5A100A,0 8px 16px rgba(153,34,24,.3)}
+.btn-danger:hover{top:-2px}
+.btn-danger:active{top:2px;box-shadow:none}
+.btn-info{background:linear-gradient(180deg,#3498DB 0%,var(--info) 100%);color:#fff;
+  box-shadow:0 1px 0 rgba(255,255,255,.2) inset,0 -2px 0 rgba(0,0,0,.2) inset,
+             0 4px 0 #0A3A58,0 8px 16px rgba(20,93,136,.3)}
+.btn-info:hover{top:-2px}
+.btn-info:active{top:2px;box-shadow:none}
+.btn-sm{padding:7px 14px;font-size:11px;border-radius:7px}
+.btn-xs{padding:4px 10px;font-size:10px;border-radius:6px}
+.btn-full{width:100%;justify-content:center}
+
+/* ── CARDS ── */
+.card{background:linear-gradient(180deg,#FFFFFF 0%,#F8F4EE 100%);
+  border:1px solid rgba(0,0,0,.10);border-radius:var(--r);overflow:hidden;
+  box-shadow:0 1px 0 rgba(255,255,255,.95) inset,
+             0 -1px 0 rgba(0,0,0,.07) inset,
+             0 4px 0 rgba(0,0,0,.09),
+             0 10px 28px rgba(0,0,0,.08)}
+.ch{padding:20px 24px 14px;border-bottom:1px solid var(--gb);display:flex;align-items:center;gap:12px}
+.ch-ico{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:22px;flex-shrink:0;
+  box-shadow:0 2px 0 rgba(0,0,0,.12),0 4px 12px rgba(0,0,0,.10)}
+.ch-ico.o{background:var(--orngd);border:1px solid var(--orngb)}
+.ch-ico.g{background:var(--goldd);border:1px solid var(--goldb)}
+.ch-ico.b{background:var(--infod);border:1px solid var(--infob)}
+.ch-ico.ok{background:var(--okd);border:1px solid var(--okb)}
+.ct{font-family:'Cinzel',serif;font-size:16px;font-weight:700}
+.cs{font-size:11px;color:var(--dim);margin-top:2px}
+.cb{padding:22px 24px}
+
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:13px;margin-bottom:24px}
+.scard{background:linear-gradient(180deg,#FFFFFF 0%,#F5F0E7 100%);
+  border:1px solid rgba(0,0,0,.10);border-radius:var(--rs);padding:17px 15px;
+  box-shadow:0 1px 0 rgba(255,255,255,.95) inset,
+             0 -1px 0 rgba(0,0,0,.07) inset,
+             0 4px 0 rgba(0,0,0,.10),
+             0 8px 20px rgba(0,0,0,.08);
+  transition:transform .12s,box-shadow .12s}
+.scard:hover{transform:translateY(-3px);
+  box-shadow:0 1px 0 rgba(255,255,255,.95) inset,
+             0 -1px 0 rgba(0,0,0,.07) inset,
+             0 7px 0 rgba(0,0,0,.10),
+             0 16px 32px rgba(0,0,0,.12)}
+.sv{font-family:'Cinzel',serif;font-size:28px;font-weight:700;line-height:1}
+.sl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-top:5px}
+.c-all{color:var(--txt)}.c-ok{color:#27AE60}.c-use{color:var(--orng)}.c-exp{color:var(--err)}.c-rev{color:var(--gold)}
+
+/* ── FORM ── */
+.fg{margin-bottom:16px}
+.fl{display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:7px}
+.fc,.fs{width:100%;background:#EDEAE2;border:1px solid rgba(0,0,0,.14);border-radius:var(--rs);
+  padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--txt);
+  outline:none;transition:all .16s;appearance:none;
+  box-shadow:0 2px 4px rgba(0,0,0,.08) inset,0 1px 0 rgba(255,255,255,.7)}
+.fc::placeholder{color:var(--mut)}
+.fc:focus,.fs:focus{background:#FFFFFF;border-color:var(--orng);
+  box-shadow:0 2px 4px rgba(0,0,0,.06) inset,0 0 0 3px var(--orngd)}
+.fs option{background:var(--obs3)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px}
+
+/* ── PLANS ── */
+.plans{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:18px}
+.plan{background:linear-gradient(180deg,#FFFFFF 0%,#EEE9DF 100%);
+  border:2px solid rgba(0,0,0,.10);border-radius:11px;padding:15px 12px;
+  cursor:pointer;transition:all .12s;text-align:center;position:relative;top:0;
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,
+             0 3px 0 rgba(0,0,0,.10),
+             0 6px 16px rgba(0,0,0,.08)}
+.plan:hover{border-color:var(--orngb);top:-2px;
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,
+             0 5px 0 rgba(0,0,0,.10),
+             0 10px 24px rgba(217,79,0,.12)}
+.plan.selected{border-color:var(--orng);background:linear-gradient(180deg,#FFF8F5,#FFE8DA);
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,
+             0 4px 0 rgba(217,79,0,.25),
+             0 8px 20px rgba(217,79,0,.18)}
+.plan-dur{font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:var(--txt);margin-bottom:3px}
+.plan-info{font-size:10px;color:var(--dim);margin-bottom:9px}
+.plan-price{font-family:'Cinzel',serif;font-size:14px;color:var(--gold);font-weight:700}
+.plan-check{position:absolute;top:7px;right:7px;width:17px;height:17px;border-radius:50%;
+  background:var(--orng);display:none;place-items:center;font-size:8px;color:#fff}
+.plan.selected .plan-check{display:grid}
+
+/* ── TOOLBAR ── */
+.toolbar{display:flex;align-items:center;gap:9px;margin-bottom:16px;flex-wrap:wrap}
+.sbox{flex:1;min-width:170px;position:relative}
+.sbox input{width:100%;background:var(--obs3);border:1px solid var(--gb);border-radius:var(--rs);
+  padding:9px 13px 9px 34px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--txt);outline:none;transition:border-color .16s}
+.sbox input:focus{border-color:var(--orng)}
+.sbox input::placeholder{color:var(--mut)}
+.sbox-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--mut);font-size:12px;pointer-events:none}
+.fsel{background:var(--obs3);border:1px solid var(--gb);border-radius:var(--rs);
+  padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--txt);
+  outline:none;cursor:pointer;appearance:none;min-width:125px}
+
+/* ── TABLE ── */
+.twrap{background:#FFFFFF;border:1px solid rgba(0,0,0,.10);border-radius:var(--r);overflow:hidden;
+  box-shadow:0 1px 0 rgba(255,255,255,.95) inset,
+             0 4px 0 rgba(0,0,0,.09),
+             0 10px 28px rgba(0,0,0,.08)}
+table{width:100%;border-collapse:collapse}
+thead{background:linear-gradient(180deg,#F0EBE0 0%,#E8E2D5 100%)}
+thead th{padding:11px 13px;text-align:left;font-size:9px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--dim);border-bottom:1px solid var(--gb);white-space:nowrap}
+tbody tr{border-bottom:1px solid rgba(0,0,0,.05);transition:background .12s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(217,79,0,.05)}
+tbody td{padding:11px 13px;font-size:12px;vertical-align:middle}
+.tc{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--gold);letter-spacing:.06em}
+.td{color:var(--dim);font-size:11px}
+.tdt{font-size:10px;color:var(--mut);white-space:nowrap}
+.empty td{text-align:center;padding:44px;color:var(--mut);font-size:13px}
+input[type=checkbox]{accent-color:var(--orng);width:13px;height:13px;cursor:pointer}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:100px;
+  font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;
+  box-shadow:0 2px 4px rgba(0,0,0,.12)}
+.badge::before{content:'●';font-size:5px}
+.b-dispo{background:var(--okd);color:#2ECC71;border:1px solid var(--okb)}
+.b-use  {background:var(--orngd);color:var(--orng);border:1px solid var(--orngb)}
+.b-exp  {background:var(--errd);color:#E74C3C;border:1px solid var(--errb)}
+
+/* ── CLIENT PAGE — PORTAIL CAPTIF ── */
+.portal-wrap{max-width:460px;margin:0 auto;padding:20px 0 40px}
+.portal-hero{text-align:center;padding:32px 20px 24px}
+.portal-signal{width:80px;height:80px;border-radius:22px;margin:0 auto 20px;
+  background:linear-gradient(145deg,#FF7020,#D94F00);
+  display:grid;place-items:center;font-size:38px;
+  box-shadow:0 2px 0 rgba(255,255,255,.2) inset,
+             0 -3px 0 rgba(0,0,0,.2) inset,
+             0 6px 0 #8B3200,
+             0 12px 32px rgba(217,79,0,.4)}
+.portal-ssid{font-family:'DM Mono',monospace;font-size:12px;color:var(--orng);
+  font-weight:600;background:var(--orngd);border:1px solid var(--orngb);
+  border-radius:100px;padding:4px 14px;display:inline-block;margin-bottom:12px}
+.portal-title{font-family:'Cinzel',serif;font-size:clamp(20px,5vw,28px);font-weight:700;
+  line-height:1.2;margin-bottom:8px}
+.portal-title span{color:var(--orng)}
+.portal-sub{font-size:13px;color:var(--dim);line-height:1.6;margin-bottom:8px}
+.portal-ip{font-family:'DM Mono',monospace;font-size:11px;color:var(--dim);
+  background:var(--obs3);border:1px solid var(--gb);border-radius:6px;
+  padding:3px 10px;display:inline-block;margin-bottom:20px}
+
+/* Carte code */
+.portal-card{background:linear-gradient(180deg,#FFFFFF,#F8F4EE);
+  border:1px solid rgba(0,0,0,.10);border-radius:18px;padding:24px;
+  box-shadow:0 1px 0 rgba(255,255,255,.95) inset,
+             0 -1px 0 rgba(0,0,0,.07) inset,
+             0 6px 0 rgba(0,0,0,.10),
+             0 16px 40px rgba(0,0,0,.09)}
+.portal-card-title{font-family:'Cinzel',serif;font-size:13px;font-weight:700;
+  color:var(--txt);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.code-wrap{display:flex;gap:10px}
+
+/* États de session */
+.session-active{background:linear-gradient(135deg,#F0FFF5,#E8FFF0);
+  border:2px solid var(--okb);border-radius:16px;padding:20px;
+  box-shadow:0 4px 0 rgba(24,107,58,.15),0 8px 24px rgba(24,107,58,.10)}
+.session-expired{background:linear-gradient(135deg,#FFF0F0,#FFE8E8);
+  border:2px solid var(--errb);border-radius:16px;padding:20px;
+  box-shadow:0 4px 0 rgba(153,34,24,.15),0 8px 24px rgba(153,34,24,.10)}
+.session-warn{background:linear-gradient(135deg,#FFF8F0,#FFF3E8);
+  border:2px solid var(--orngb);border-radius:16px;padding:20px}
+
+/* Countdown grand */
+.big-cdown{font-family:'DM Mono',monospace;font-size:48px;font-weight:500;
+  letter-spacing:.06em;text-align:center;line-height:1;margin:12px 0 4px;
+  transition:color .3s}
+.big-cdown.ok{color:var(--ok)}
+.big-cdown.warn{color:var(--orng)}
+.big-cdown.dead{color:var(--err)}
+.cdown-label{font-size:10px;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--dim);text-align:center;margin-bottom:14px}
+
+/* Barre de progression */
+.prog-track{background:var(--obs4);border-radius:100px;height:8px;overflow:hidden;
+  margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.1) inset}
+.prog-fill{height:100%;border-radius:100px;transition:width 1s linear,background .5s}
+
+/* Infos session */
+.sess-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.sess-item{text-align:center;background:rgba(255,255,255,.6);
+  border-radius:10px;padding:8px 6px;border:1px solid rgba(0,0,0,.06)}
+.sess-item span{display:block;font-size:8px;color:var(--dim);
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
+.sess-item strong{font-size:11.5px;color:var(--txt);font-weight:600}
+
+/* Bouton couper */
+.btn-cut{background:linear-gradient(180deg,#E74C3C,var(--err));color:#fff;width:100%;
+  justify-content:center;font-size:13px;padding:12px;
+  box-shadow:0 1px 0 rgba(255,255,255,.2) inset,
+             0 -2px 0 rgba(0,0,0,.2) inset,
+             0 4px 0 #5A100A,
+             0 8px 20px rgba(153,34,24,.3)}
+.btn-cut:hover{top:-2px}
+.btn-cut:active{top:2px;box-shadow:none}
+
+/* Status bar */
+.status-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;
+  border-radius:10px;font-size:12px;margin-bottom:14px}
+.status-bar.connected{background:var(--okd);border:1px solid var(--okb);color:var(--ok)}
+.status-bar.disconnected{background:var(--errd);border:1px solid var(--errb);color:var(--err)}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.status-dot.on{background:var(--ok);box-shadow:0 0 6px rgba(24,107,58,.7);animation:blink .8s infinite}
+.status-dot.off{background:var(--err)}
+.c-badge{display:inline-flex;align-items:center;gap:6px;background:var(--orngd);border:1px solid var(--orngb);
+  border-radius:100px;padding:5px 14px;font-size:9.5px;font-weight:600;color:var(--orng);
+  text-transform:uppercase;letter-spacing:.1em;margin-bottom:20px}
+.client-hero h1{font-family:'Cinzel',serif;font-size:clamp(22px,4vw,34px);font-weight:700;margin-bottom:11px}
+.client-hero h1 span{color:var(--orng)}
+.client-hero p{font-size:13.5px;color:var(--dim);line-height:1.7;margin-bottom:26px}
+.code-wrap{display:flex;gap:10px;max-width:440px;margin:0 auto}
+.code-inp{flex:1;background:var(--obs2);border:2px solid var(--gb);border-radius:12px;
+  padding:15px 16px;font-family:'DM Mono',monospace;font-size:17px;color:var(--txt);
+  text-align:center;letter-spacing:.14em;text-transform:uppercase;outline:none;transition:all .16s}
+.code-inp:focus{border-color:var(--orng);box-shadow:0 0 0 4px var(--orngd), 0 0 16px rgba(229,88,0,.10)}
+.code-inp::placeholder{color:var(--mut);font-size:13px;letter-spacing:.04em}
+.result-panel{max-width:440px;margin:22px auto 0;display:none}
+.r-ok,.r-err,.r-exp{border-radius:12px;padding:20px 22px;animation:fi .28s ease}
+.r-ok {background:var(--okd);border:1px solid var(--okb)}
+.r-err{background:var(--errd);border:1px solid var(--errb)}
+.r-exp{background:var(--orngd);border:1px solid var(--orngb)}
+.r-icon{font-size:26px;margin-bottom:8px}
+.r-title{font-family:'Cinzel',serif;font-size:15px;margin-bottom:5px}
+.r-sub{font-size:12.5px;color:var(--dim);line-height:1.6}
+.r-detail{margin-top:11px;padding:11px 13px;background:rgba(255,255,255,.04);border-radius:8px}
+.r-row{display:flex;justify-content:space-between;font-size:11.5px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.r-row:last-child{border-bottom:none}
+.r-row span{color:var(--dim)}.r-row strong{color:var(--txt)}
+
+/* ── VOUCHER CARD (écran) ── */
+.vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:18px}
+.vcard{background:linear-gradient(180deg,#FFFDF8 0%,#FFF3E0 100%);
+  border:1px solid rgba(160,120,32,.30);border-radius:13px;padding:16px 14px;
+  position:relative;overflow:hidden;
+  box-shadow:0 1px 0 rgba(255,255,255,.95) inset,
+             0 -1px 0 rgba(0,0,0,.07) inset,
+             0 4px 0 rgba(160,120,32,.20),
+             0 10px 24px rgba(160,120,32,.12)}
+.vcard::before{content:'';position:absolute;top:-28px;right:-28px;width:90px;height:90px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,168,76,.1),transparent 70%)}
+.vc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.vc-brand{font-family:'Cinzel',serif;font-size:9px;color:var(--orng);letter-spacing:.08em}
+.vc-dur{font-size:9px;background:var(--goldd);border:1px solid var(--goldb);
+  border-radius:5px;padding:2px 7px;color:var(--gold);font-weight:600}
+.vc-code{font-family:'DM Mono',monospace;font-size:13.5px;font-weight:500;
+  color:var(--gold);letter-spacing:.1em;text-align:center;margin:8px 0;
+  background:var(--obs);border-radius:7px;padding:8px;border:1px dashed var(--goldb)}
+.vc-qr{display:flex;justify-content:center;margin:8px 0}
+.vc-qr img{border-radius:6px;border:1px solid var(--goldb)}
+.vc-info{display:flex;justify-content:space-between;margin-top:8px}
+.vc-item{text-align:center}
+.vc-item span{display:block;font-size:8.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.07em}
+.vc-item strong{font-size:10.5px;color:var(--txt);font-weight:600}
+.vc-price{text-align:center;margin-top:9px;font-family:'Cinzel',serif;font-size:12px;color:var(--gold)}
+
+/* ── SUPABASE CONFIG ── */
+.sup-status{display:flex;align-items:center;gap:10px;padding:13px 16px;
+  background:var(--obs3);border:1px solid var(--gb);border-radius:var(--rs);margin-bottom:18px;font-size:12.5px}
+.sup-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.sup-dot.ok{background:#27AE60;box-shadow:0 0 8px rgba(39,174,96,.5)}
+.sup-dot.off{background:var(--mut)}
+.sup-dot.err{background:#E74C3C;box-shadow:0 0 8px rgba(192,57,43,.5)}
+.sql-block{background:var(--obs3);border:1px solid var(--gb);border-radius:8px;padding:14px;
+  font-family:'DM Mono',monospace;font-size:11px;color:var(--orng);line-height:1.7;white-space:pre;overflow-x:auto;margin-top:10px}
+
+/* ── MODAL ── */
+.mo{display:none;position:fixed;inset:0;z-index:100;background:rgba(28,25,22,.45);
+  backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px}
+.mo.open{display:flex;animation:fi .2s ease}
+.md{background:linear-gradient(180deg,#FFFFFF 0%,#F8F4EE 100%);
+  border:1px solid rgba(0,0,0,.12);border-radius:var(--r);
+  width:100%;max-width:520px;max-height:90vh;overflow-y:auto;
+  box-shadow:0 1px 0 rgba(255,255,255,.95) inset,
+             0 -1px 0 rgba(0,0,0,.08) inset,
+             0 4px 0 rgba(0,0,0,.10),
+             0 20px 60px rgba(0,0,0,.20)}
+.mh{padding:19px 23px 14px;border-bottom:1px solid var(--gb);display:flex;align-items:center;justify-content:space-between}
+.mt{font-family:'Cinzel',serif;font-size:14px}
+.mb{padding:20px 23px}
+.mf{padding:13px 23px;border-top:1px solid var(--gb);display:flex;gap:8px;justify-content:flex-end}
+
+/* ── CHARTS ── */
+.bar-row{margin-bottom:12px}
+.bar-labels{display:flex;justify-content:space-between;font-size:10.5px;margin-bottom:4px}
+.bar-track{background:var(--obs4);border-radius:4px;height:8px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+
+/* ── TOAST ── */
+.toasts{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px}
+.t-msg{background:linear-gradient(180deg,#FFFFFF,#F5F0E8);border:1px solid rgba(0,0,0,.10);
+  border-radius:9px;padding:11px 15px;font-size:12px;font-weight:500;
+  color:var(--txt);min-width:230px;
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,
+             0 4px 0 rgba(0,0,0,.10),
+             0 12px 28px rgba(0,0,0,.12);
+  animation:fi .25s ease}
+.t-msg.ok {border-color:var(--okb)}
+.t-msg.err{border-color:var(--errb)}
+.t-msg.info{border-color:var(--goldb)}
+
+/* ── HOTSPOT CONFIG ── */
+.hs-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px}
+.hs-section{background:var(--obs2);border:1px solid var(--gb);border-radius:var(--r);overflow:hidden}
+.hs-section-full{grid-column:1/-1}
+.hs-badge{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.1em;padding:3px 9px;border-radius:100px}
+.hs-badge.ok{background:var(--okd);color:#2ECC71;border:1px solid var(--okb)}
+.hs-badge.warn{background:var(--orngd);color:var(--orng);border:1px solid var(--orngb)}
+.toggle-wrap{display:flex;align-items:center;justify-content:space-between;padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.04)}
+.toggle-wrap:last-child{border-bottom:none}
+.toggle-label{font-size:12.5px;color:var(--txt)}
+.toggle-sub{font-size:10.5px;color:var(--dim);margin-top:2px}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--obs5);border-radius:100px;cursor:pointer;transition:.2s}
+.toggle-slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;
+  background:var(--dim);border-radius:50%;transition:.2s}
+.toggle input:checked+.toggle-slider{background:var(--orng)}
+.toggle input:checked+.toggle-slider::before{transform:translateX(18px);background:#fff}
+.strength-bar{display:flex;gap:3px;margin-top:6px}
+.sb-seg{flex:1;height:4px;border-radius:2px;background:var(--obs5);transition:background .3s}
+
+/* ── FICHE HOTSPOT IMPRIMABLE ── */
+@media print{
+  .hs-print-only{display:block!important}
+  .hs-noprint{display:none!important}
+}
+.hs-print-only{display:none}
+.hs-fiche{max-width:520px;margin:0 auto;background:linear-gradient(135deg,#FFFDF8,#FFF6E8);
+  border:2px solid var(--goldb);border-radius:18px;padding:28px 26px;position:relative;overflow:hidden}
+.hs-fiche::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,98,0,.12),transparent 70%)}
+.hs-fiche::after{content:'';position:absolute;bottom:-60px;left:-60px;width:160px;height:160px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,168,76,.1),transparent 70%)}
+.hs-fiche-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.hs-fiche-brand{font-family:'Cinzel',serif;font-size:11px;color:var(--orng);letter-spacing:.1em}
+.hs-fiche-title{font-family:'Cinzel',serif;font-size:20px;font-weight:700;margin-bottom:5px}
+.hs-fiche-sub{font-size:11px;color:var(--dim)}
+.hs-fiche-body{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start;margin-top:18px}
+.hs-fiche-rows{flex:1}
+.hs-fiche-row{display:flex;justify-content:space-between;align-items:center;
+  padding:9px 12px;background:rgba(255,255,255,.035);border-radius:8px;margin-bottom:7px}
+.hs-fiche-row:last-child{margin-bottom:0}
+.hs-fiche-key{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+.hs-fiche-val{font-family:'DM Mono',monospace;font-size:12.5px;color:var(--gold);font-weight:500}
+.hs-fiche-ssid{text-align:center;margin-bottom:18px;padding:16px;
+  background:rgba(201,168,76,.07);border:1px dashed var(--goldb);border-radius:12px}
+.hs-fiche-ssid-label{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.hs-fiche-ssid-name{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--gold)}
+.hs-fiche-qr{display:flex;flex-direction:column;align-items:center;gap:8px}
+.hs-fiche-qr img{border-radius:9px;border:1px solid var(--goldb)}
+.hs-fiche-qr-label{font-size:9px;color:var(--dim);text-align:center;text-transform:uppercase;letter-spacing:.06em}
+.hs-fiche-footer{margin-top:18px;padding-top:14px;border-top:1px solid var(--gb);
+  display:flex;justify-content:space-between;align-items:center}
+.hs-fiche-footer-note{font-size:10px;color:var(--mut)}
+
+@media(max-width:920px){.hs-grid{grid-template-columns:1fr}}
+@media(max-width:640px){.hs-fiche-body{grid-template-columns:1fr}}
+
+/* ── PWA INSTALL ── */
+.pwa-btn{display:none;align-items:center;gap:7px;padding:6px 14px;border-radius:var(--rs);
+  background:linear-gradient(180deg,#FFFFFF,var(--obs3));
+  border:1px solid var(--gb);font-size:11px;font-weight:700;color:var(--orng);cursor:pointer;
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 3px 0 rgba(0,0,0,.09),0 6px 14px rgba(0,0,0,.08);
+  transition:all .1s;position:relative;top:0}
+.pwa-btn.visible{display:flex}
+.pwa-btn:hover{top:-1px;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 5px 0 rgba(0,0,0,.09),0 10px 20px rgba(217,79,0,.15)}
+.pwa-btn:active{top:1px;box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 1px 0 rgba(0,0,0,.09)}
+
+/* ── PWA INSTALL BANNER (mobile) ── */
+.pwa-banner{display:none;position:fixed;bottom:72px;left:12px;right:12px;z-index:90;
+  background:linear-gradient(135deg,#FFFFFF,#FFF4EC);
+  border:2px solid var(--orngb);border-radius:14px;padding:16px 18px;
+  box-shadow:0 4px 0 rgba(217,79,0,.15),0 12px 32px rgba(0,0,0,.15);
+  animation:fi .3s ease}
+.pwa-banner.visible{display:flex;align-items:center;gap:14px}
+
+/* ── OFFLINE BANNER ── */
+.offline-pill{display:none;align-items:center;gap:6px;padding:4px 11px;border-radius:100px;
+  background:var(--errd);border:1px solid var(--errb);font-size:10px;font-weight:700;
+  color:var(--err);text-transform:uppercase;letter-spacing:.08em;animation:blink .9s infinite}
+.offline-pill.visible{display:flex}
+.queue-pill{display:none;align-items:center;gap:6px;padding:4px 11px;border-radius:100px;
+  background:var(--goldd);border:1px solid var(--goldb);font-size:10px;font-weight:700;
+  color:var(--gold);text-transform:uppercase;letter-spacing:.08em}
+.queue-pill.visible{display:flex}
+.cdown-wrap{max-width:440px;margin:18px auto 0;background:var(--obs2);border:1px solid var(--gb);
+  border-radius:14px;padding:20px 22px;animation:fi .3s ease}
+.cdown-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cdown-title{font-family:'Cinzel',serif;font-size:13px;color:var(--txt)}
+.cdown-status{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;padding:3px 9px;border-radius:100px}
+.cdown-status.active{background:var(--okd);color:#2ECC71;border:1px solid var(--okb)}
+.cdown-status.expiring{background:var(--orngd);color:var(--orng);border:1px solid var(--orngb)}
+.cdown-status.expired{background:var(--errd);color:#E74C3C;border:1px solid var(--errb)}
+.cdown-time{text-align:center;margin:10px 0 14px}
+.cdown-digits{font-family:'DM Mono',monospace;font-size:34px;font-weight:500;
+  letter-spacing:.08em;line-height:1;transition:color .3s}
+.cdown-digits.ok{color:#27AE60}
+.cdown-digits.warn{color:var(--orng)}
+.cdown-digits.danger{color:#E74C3C}
+.cdown-sub{font-size:10px;color:var(--dim);margin-top:6px;letter-spacing:.04em}
+.cdown-bar-track{background:var(--obs4);border-radius:100px;height:6px;overflow:hidden;margin-bottom:14px}
+.cdown-bar-fill{height:100%;border-radius:100px;transition:width 1s linear,background .5s}
+.cdown-info{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.cdown-item{text-align:center;background:var(--obs3);border-radius:8px;padding:8px 6px}
+.cdown-item span{display:block;font-size:8.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+.cdown-item strong{font-size:11px;color:var(--txt)}
+.cdown-actions{display:flex;gap:8px}
+.cdown-cut{background:linear-gradient(135deg,var(--err),#E74C3C);color:#fff;
+  border:none;box-shadow:0 4px 14px rgba(192,57,43,.4)}
+.cdown-cut:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(192,57,43,.6)}
+
+/* ── MONITOR BAR (admin) ── */
+.monitor-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;
+  background:linear-gradient(180deg,#F8F4EE,#FFFFFF);
+  border-top:2px solid rgba(0,0,0,.10);
+  backdrop-filter:blur(16px);padding:10px 20px;
+  display:none;align-items:center;gap:14px;flex-wrap:wrap;
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,
+             0 -6px 0 rgba(0,0,0,.08),
+             0 -12px 24px rgba(0,0,0,.08)}
+.monitor-bar.visible{display:flex}
+.monitor-ticker{flex:1;display:flex;gap:10px;overflow-x:auto;min-width:0;padding-bottom:2px}
+.monitor-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;
+  border-radius:100px;font-size:10.5px;white-space:nowrap;flex-shrink:0;cursor:default}
+.monitor-chip.ok  {background:var(--okd);border:1px solid var(--okb);color:#2ECC71}
+.monitor-chip.warn{background:var(--orngd);border:1px solid var(--orngb);color:var(--orng)}
+.monitor-chip.dead{background:var(--errd);border:1px solid var(--errb);color:#E74C3C}
+.monitor-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.monitor-dot.ok  {background:#27AE60;box-shadow:0 0 5px rgba(39,174,96,.7)}
+.monitor-dot.warn{background:var(--orng);box-shadow:0 0 5px rgba(255,98,0,.7);animation:blink .8s infinite}
+.monitor-dot.dead{background:#E74C3C;box-shadow:0 0 5px rgba(192,57,43,.7)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+@media print{
+  body{background:#fff!important;color:#000!important}
+  header,.hnav,.toolbar,.stats,.twrap,.toasts,.mo,.bg,
+  #viewAdmin,#viewList,#viewDash,#viewSettings,
+  #previewActions{display:none!important}
+  .vgrid{display:grid!important;grid-template-columns:repeat(3,1fr);gap:8px;padding:8px}
+  .vcard{border:1px solid #bbb;break-inside:avoid;background:#fff!important;color:#000!important;page-break-inside:avoid}
+  .vc-code{background:#f5f5f5!important;border:1px dashed #999!important;color:#000!important}
+  .vc-brand,.vc-dur,.vc-price,.vc-item strong{color:#000!important}
+  .vc-item span,.vc-brand{color:#555!important}
+  .vc-qr img{filter:none}
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:920px){.stats{grid-template-columns:repeat(3,1fr)}.plans{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){
+  header{padding:0 13px}
+  main{padding:18px 13px 60px}
+  .stats{grid-template-columns:1fr 1fr}
+  .frow,.frow3{grid-template-columns:1fr}
+  .plans{grid-template-columns:1fr 1fr}
+  .vgrid{grid-template-columns:1fr 1fr}
+  .code-wrap{flex-direction:column}
+  table{display:block;overflow-x:auto}
+  .hnav .btn-sm span{display:none}
+}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="logo">
+    <div class="logo-ico">📡</div>
+    <div>
+      <div class="logo-t">Flybox Vouchers</div>
+      <div class="logo-s">Orange Guinée</div>
+    </div>
+  </div>
+  <div class="hnav">
+    <button class="pwa-btn" id="pwaInstallBtn" onclick="pwaInstall()">⬇️ Installer</button>
+    <div class="offline-pill" id="offlinePill">📡 Hors ligne</div>
+    <div class="queue-pill"   id="queuePill">⏳ <span id="queueCount">0</span> en attente</div>
+    <div class="sync-dot off" id="syncDot" title="Supabase non configuré"></div>
+    <button class="btn btn-ghost btn-sm" onclick="showView('client')">🌐 <span>Connexion</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="requireAdmin('gen')">➕ <span>Générer</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="requireAdmin('list')">📋 <span>Tickets</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="requireAdmin('dash')">📊 <span>Stats</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="requireAdmin('hotspot')">📶 <span>Hotspot</span></button>
+    <button class="btn btn-ghost btn-sm" onclick="requireAdmin('settings')">⚙️ <span>Config</span></button>
+    <button class="btn btn-danger btn-sm" id="btnOut" style="display:none" onclick="logout()">Quitter</button>
+  </div>
+</header>
+
+<!-- ══ MONITOR BAR (admin — tickets actifs) ══ -->
+<div class="monitor-bar" id="monitorBar">
+  <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);white-space:nowrap">
+    ⏱ Sessions actives
+  </div>
+  <div class="monitor-ticker" id="monitorTicker"></div>
+  <button class="btn btn-danger btn-xs" onclick="cutAllFlybox()" title="Tenter de couper le WiFi Flybox">
+    ✂️ Couper WiFi
+  </button>
+</div>
+<main>
+
+  <!-- ── CLIENT — PORTAIL CAPTIF ── -->
+  <div class="view active" id="viewClient">
+    <div class="portal-wrap">
+
+      <!-- Hero -->
+      <div class="portal-hero">
+        <div class="portal-signal">📡</div>
+        <div class="portal-ssid" id="portalSsid">Flybox-A0B9E6</div>
+        <div class="portal-title">Accès <span>Internet</span> Flybox</div>
+        <div class="portal-sub">Vous êtes connecté au réseau WiFi.<br>Entrez votre code voucher pour activer internet.</div>
+        <div class="portal-ip" id="portalIp">Détection IP…</div>
+      </div>
+
+      <!-- Barre statut connexion -->
+      <div class="status-bar disconnected" id="portalStatus">
+        <div class="status-dot off" id="portalStatusDot"></div>
+        <span id="portalStatusMsg">Internet non activé — entrez votre code</span>
+      </div>
+
+      <!-- Carte saisie code -->
+      <div class="portal-card" id="portalCodeCard">
+        <div class="portal-card-title">🎟️ Votre code voucher</div>
+        <div class="code-wrap">
+          <input class="code-inp" id="codeInp" maxlength="16" placeholder="FBX-XXXX-XXXX"
+            oninput="this.value=this.value.toUpperCase()"
+            onkeydown="if(event.key==='Enter')checkCode()">
+          <button class="btn btn-orange" onclick="checkCode()" style="padding:0 20px;border-radius:12px">✅</button>
+        </div>
+        <div id="resultPanel" style="margin-top:14px"></div>
+      </div>
+
+      <!-- Session active (affiché après activation) -->
+      <div id="sessionPanel" style="display:none;margin-top:16px"></div>
+
+    </div>
+  </div>
+
+  <!-- ── GÉNÉRER ── -->
+  <div class="view" id="viewGen">
+    <div style="margin-bottom:20px">
+      <div style="font-family:'Cinzel',serif;font-size:18px">Générer des Vouchers</div>
+      <div style="font-size:11.5px;color:var(--dim);margin-top:3px">Créez des tickets d'accès internet avec QR codes intégrés</div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ch-ico o">🎟️</div><div><div class="ct">Paramètres du lot</div><div class="cs">Sélectionnez un forfait puis lancez la génération</div></div></div>
+      <div class="cb">
+        <label class="fl">Forfait</label>
+        <div class="plans" id="plansGrid"></div>
+        <div class="frow3">
+          <div class="fg"><label class="fl">Quantité</label><input type="number" id="gQty" class="fc" value="5" min="1" max="100"></div>
+          <div class="fg"><label class="fl">Préfixe</label><input type="text" id="gPrefix" class="fc" value="FBX" maxlength="5" style="text-transform:uppercase"></div>
+          <div class="fg"><label class="fl">Validité stock (j)</label><input type="number" id="gValidity" class="fc" value="30" min="1"></div>
+        </div>
+        <button class="btn btn-orange btn-full" onclick="generateVouchers()" style="margin-top:4px">⚡ Générer les Vouchers</button>
+      </div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div id="previewWrap" style="display:none;margin-top:26px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px" id="previewActions">
+        <div>
+          <div style="font-family:'Cinzel',serif;font-size:14px" id="previewTitle">Vouchers générés</div>
+          <div style="font-size:11px;color:var(--dim);margin-top:2px">QR codes inclus — prêts à imprimer</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('previewWrap').style.display='none'">✕ Fermer</button>
+          <button class="btn btn-gold btn-sm" onclick="window.print()">🖨️ Imprimer</button>
+        </div>
+      </div>
+      <div class="vgrid" id="voucherPreview"></div>
+    </div>
+  </div>
+
+  <!-- ── LISTE ── -->
+  <div class="view" id="viewList">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-family:'Cinzel',serif;font-size:18px">Gestion des Tickets</div>
+        <div style="font-size:11.5px;color:var(--dim);margin-top:3px" id="listCount">—</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-danger btn-sm" onclick="deleteSelected()" id="btnDelSel" style="display:none">🗑 Supprimer sélection</button>
+        <button class="btn btn-info btn-sm" onclick="printSelected()" id="btnPrintSel" style="display:none">🖨️ Imprimer sélection</button>
+        <button class="btn btn-gold btn-sm" onclick="exportCSV()">⬇️ CSV</button>
+        <button class="btn btn-orange btn-sm" onclick="openCreate()">➕ Nouveau voucher</button>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div class="sbox"><span class="sbox-ico">🔍</span><input type="text" id="searchQ" placeholder="Code, forfait…" oninput="renderList()"></div>
+      <select class="fsel" id="fStat" onchange="renderList()">
+        <option value="">Tous les statuts</option>
+        <option value="Disponible">Disponible</option>
+        <option value="Utilisé">Utilisé</option>
+        <option value="Expiré">Expiré</option>
+      </select>
+      <select class="fsel" id="fPlan" onchange="renderList()">
+        <option value="">Tous les forfaits</option>
+      </select>
+    </div>
+    <div class="twrap">
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="chkAll" onchange="toggleAll(this.checked)"></th>
+            <th>Code</th><th>Forfait</th><th>Durée</th><th>Prix</th><th>Statut</th>
+            <th>Créé</th><th>Activé</th><th>Expire</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="listBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD ── -->
+  <div class="view" id="viewDash">
+    <div style="margin-bottom:20px">
+      <div style="font-family:'Cinzel',serif;font-size:18px">Tableau de Bord</div>
+      <div style="font-size:11.5px;color:var(--dim);margin-top:3px">Synthèse en temps réel</div>
+    </div>
+    <div class="stats" id="statsBox"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
+      <div class="card">
+        <div class="ch"><div class="ch-ico g">📊</div><div><div class="ct">Par Forfait</div><div class="cs">Stock disponible vs total</div></div></div>
+        <div class="cb" id="planChart"></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ch-ico o">💰</div><div><div class="ct">Revenus potentiels</div><div class="cs">Stock disponible × prix</div></div></div>
+        <div class="cb" id="revChart"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SETTINGS ── -->
+  <div class="view" id="viewSettings">
+    <div style="margin-bottom:20px">
+      <div style="font-family:'Cinzel',serif;font-size:18px">Configuration</div>
+      <div style="font-size:11.5px;color:var(--dim);margin-top:3px">Supabase · Firebase · paramètres</div>
+    </div>
+
+    <!-- SUPABASE -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="ch"><div class="ch-ico b">☁️</div><div><div class="ct">Supabase — Sync Cloud</div><div class="cs">Partagez les vouchers entre plusieurs PC en temps réel</div></div></div>
+      <div class="cb">
+        <div class="sup-status" id="supStatus">
+          <div class="sup-dot off" id="supDot"></div>
+          <span id="supMsg">Non configuré — données en localStorage uniquement</span>
+        </div>
+        <div class="frow">
+          <div class="fg"><label class="fl">URL Supabase</label><input type="text" id="supUrl" class="fc" placeholder="https://xxxxxxxxxxxx.supabase.co"></div>
+          <div class="fg"><label class="fl">Anon Key</label><input type="text" id="supKey" class="fc" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."></div>
+        </div>
+        <div style="display:flex;gap:9px;flex-wrap:wrap">
+          <button class="btn btn-orange" onclick="saveSupabase()">💾 Sauvegarder & Connecter</button>
+          <button class="btn btn-ghost btn-sm" onclick="testConn()">🔌 Tester la connexion</button>
+          <button class="btn btn-danger btn-sm" onclick="clearSupabase()">✕ Déconnecter</button>
+        </div>
+
+        <!-- SQL -->
+        <div style="margin-top:22px">
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:8px">
+            Script SQL — à exécuter dans Supabase → SQL Editor
+          </div>
+          <div class="sql-block" id="sqlBlock">create table if not exists vouchers (
+  id        text primary key,
+  plan      text,
+  plan_id   text,
+  dur       int,
+  unit      text,
+  quota     text,
+  price     int  default 0,
+  statut    text default 'Disponible',
+  created   text,
+  activated text,
+  expires   text,
+  validity  int  default 30,
+  client_ip  text,
+  client_mac text,
+  blocked    boolean default false
+);
+
+-- Activer la lecture publique (pour vérification des codes)
+alter table vouchers enable row level security;
+create policy "Public read" on vouchers for select using (true);
+create policy "Auth write"  on vouchers for all using (auth.role() = 'anon');</div>
+          <button class="btn btn-ghost btn-sm" onclick="copySQL()" style="margin-top:8px">📋 Copier le SQL</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIREBASE -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="ch"><div class="ch-ico o">🔥</div><div><div class="ct">Firebase — Firestore</div><div class="cs">console.firebase.google.com → Paramètres du projet → Vos applications → Web</div></div></div>
+      <div class="cb">
+        <div class="sup-status" id="fireStatus">
+          <div class="sup-dot off" id="fireDot"></div>
+          <span id="fireMsg">Non configuré — collez votre firebaseConfig ci-dessous</span>
+        </div>
+
+        <!-- Hint visuel -->
+        <div style="background:var(--obs3);border:1px solid var(--gb);border-radius:var(--rs);
+          padding:11px 14px;margin-bottom:16px;font-family:'DM Mono',monospace;font-size:10.5px;
+          color:var(--dim);line-height:1.8">
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--mut);margin-bottom:6px">
+            📋 Votre firebaseConfig ressemble à ceci :
+          </div>
+          <span style="color:var(--info)">apiKey</span>:            <span style="color:var(--ok)">"AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"</span>,<br>
+          <span style="color:var(--info)">authDomain</span>:        <span style="color:var(--ok)">"votre-projet.firebaseapp.com"</span>,<br>
+          <span style="color:var(--info)">projectId</span>:         <span style="color:var(--ok)">"votre-projet"</span>,<br>
+          <span style="color:var(--info)">appId</span>:             <span style="color:var(--ok)">"1:123456789:web:abc123def456"</span>
+        </div>
+
+        <div class="frow">
+          <div class="fg">
+            <label class="fl">API Key <span style="color:var(--err)">*</span></label>
+            <input type="text" id="fireApiKey" class="fc"
+              placeholder="AIzaSyC1xxxxxxxxxxxxxxxxxxxxxxxxxxx"
+              style="font-family:'DM Mono',monospace;font-size:11.5px;letter-spacing:.02em">
+            <div style="font-size:10px;color:var(--mut);margin-top:4px">Commence toujours par <code style="background:var(--obs3);padding:1px 5px;border-radius:4px">AIzaSy</code></div>
+          </div>
+          <div class="fg">
+            <label class="fl">Project ID <span style="color:var(--err)">*</span></label>
+            <input type="text" id="fireProjectId" class="fc"
+              placeholder="flybox-orange-gn"
+              oninput="autoFillAuthDomain()"
+              style="font-family:'DM Mono',monospace;font-size:12px">
+            <div style="font-size:10px;color:var(--mut);margin-top:4px">Ex : <code style="background:var(--obs3);padding:1px 5px;border-radius:4px">flybox-orange-gn</code></div>
+          </div>
+        </div>
+        <div class="frow">
+          <div class="fg">
+            <label class="fl">Auth Domain</label>
+            <input type="text" id="fireAuthDomain" class="fc"
+              placeholder="flybox-orange-gn.firebaseapp.com"
+              style="font-family:'DM Mono',monospace;font-size:11.5px">
+            <div style="font-size:10px;color:var(--mut);margin-top:4px">Auto-rempli depuis le Project ID</div>
+          </div>
+          <div class="fg">
+            <label class="fl">App ID <span style="color:var(--err)">*</span></label>
+            <input type="text" id="fireAppId" class="fc"
+              placeholder="1:123456789012:web:abc123def456ghi"
+              style="font-family:'DM Mono',monospace;font-size:10.5px">
+            <div style="font-size:10px;color:var(--mut);margin-top:4px">Commence par <code style="background:var(--obs3);padding:1px 5px;border-radius:4px">1:</code></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px">
+          <button class="btn btn-orange" onclick="saveFirebase()">🔥 Sauvegarder & Connecter</button>
+          <button class="btn btn-ghost btn-sm" onclick="testFirebase()">🔌 Tester</button>
+          <button class="btn btn-danger btn-sm" onclick="clearFirebase()">✕ Déconnecter</button>
+        </div>
+
+        <!-- Règles Firestore -->
+        <div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:8px">
+            Règles Firestore — à coller dans Firebase Console → Firestore → Règles
+          </div>
+          <div class="sql-block">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /vouchers/{id} {
+      allow read: if true;
+      allow write: if request.auth == null;
+    }
+    match /hotspot_config/{id} {
+      allow read, write: if request.auth == null;
+    }
+  }
+}</div>
+          <button class="btn btn-ghost btn-sm" onclick="copyFireRules()" style="margin-top:8px">📋 Copier les règles</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOT DE PASSE ADMIN -->    <div class="card" style="margin-bottom:16px">
+      <div class="ch"><div class="ch-ico ok">🔐</div><div><div class="ct">Identifiants Admin</div><div class="cs">Modifier le mot de passe de l'interface</div></div></div>
+      <div class="cb">
+        <div class="frow">
+          <div class="fg"><label class="fl">Nouveau mot de passe</label><input type="password" id="newPass" class="fc" placeholder="••••••••"></div>
+          <div class="fg"><label class="fl">Confirmer</label><input type="password" id="newPass2" class="fc" placeholder="••••••••"></div>
+        </div>
+        <button class="btn btn-gold" onclick="changePass()">🔑 Changer le mot de passe</button>
+      </div>
+    </div>
+
+    <!-- RESET -->
+    <div class="card" style="border-color:var(--errb)">
+      <div class="ch"><div class="ch-ico" style="background:var(--errd);border:1px solid var(--errb)">⚠️</div><div><div class="ct" style="color:#E74C3C">Zone Dangereuse</div><div class="cs">Actions irréversibles — procéder avec précaution</div></div></div>
+      <div class="cb">
+        <div style="display:grid;gap:12px">
+
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--obs3);border:1px solid var(--gb);border-radius:var(--rs);gap:16px;flex-wrap:wrap">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--txt);margin-bottom:3px">Supprimer les expirés</div>
+              <div style="font-size:11px;color:var(--dim)">Retire tous les vouchers avec le statut "Expiré"</div>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="resetExpired()">🗑 Purger les expirés</button>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--obs3);border:1px solid var(--gb);border-radius:var(--rs);gap:16px;flex-wrap:wrap">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--txt);margin-bottom:3px">Remettre à zéro tous les vouchers</div>
+              <div style="font-size:11px;color:var(--dim)">Supprime <strong style="color:#E74C3C">TOUS</strong> les vouchers — localStorage + Supabase + Firebase</div>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="resetAll()">🔴 Tout réinitialiser</button>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--obs3);border:1px solid var(--gb);border-radius:var(--rs);gap:16px;flex-wrap:wrap">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--txt);margin-bottom:3px">Réinitialiser toute l'application</div>
+              <div style="font-size:11px;color:var(--dim)">Supprime vouchers + config Supabase + config Firebase + identifiants personnalisés</div>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="resetFactory()">💥 Remise d'usine</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HOTSPOT CONFIG ── -->
+  <div class="view" id="viewHotspot">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-family:'Cinzel',serif;font-size:18px">Configuration Hotspot</div>
+        <div style="font-size:11.5px;color:var(--dim);margin-top:3px">Paramètres réseau Flybox — synchronisés dans le cloud</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm hs-noprint" onclick="printHotspotFiche()">🖨️ Imprimer la fiche</button>
+        <button class="btn btn-orange btn-sm hs-noprint" onclick="saveHotspot()">💾 Sauvegarder</button>
+      </div>
+    </div>
+
+    <div class="hs-grid">
+
+      <!-- INFOS DE BASE -->
+      <div class="hs-section">
+        <div class="ch"><div class="ch-ico o">📶</div><div><div class="ct">Réseau WiFi</div><div class="cs">Identité et accès du point d'accès</div></div></div>
+        <div class="cb">
+          <div class="fg"><label class="fl">Nom du réseau (SSID)</label>
+            <input type="text" id="hsSsid" class="fc" placeholder="Flybox-Orange-GN" oninput="updateHsPreview()"></div>
+          <div class="fg"><label class="fl">Mot de passe WiFi</label>
+            <div style="position:relative">
+              <input type="password" id="hsPass" class="fc" placeholder="••••••••" oninput="updateHsPreview();updateStrength()" style="padding-right:42px">
+              <button onclick="togglePassVis('hsPass',this)" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);
+                background:none;border:none;color:var(--dim);cursor:pointer;font-size:14px">👁</button>
+            </div>
+            <div class="strength-bar" id="strengthBar">
+              <div class="sb-seg" id="sb0"></div><div class="sb-seg" id="sb1"></div>
+              <div class="sb-seg" id="sb2"></div><div class="sb-seg" id="sb3"></div>
+            </div>
+            <div style="font-size:10px;color:var(--dim);margin-top:4px" id="strengthLabel">—</div>
+          </div>
+          <div class="frow">
+            <div class="fg"><label class="fl">Bande fréquence</label>
+              <select id="hsBande" class="fs" onchange="updateHsPreview()">
+                <option value="2.4GHz">2.4 GHz (portée max)</option>
+                <option value="5GHz">5 GHz (débit max)</option>
+                <option value="2.4+5GHz" selected>Dual Band 2.4+5 GHz</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">Canal WiFi</label>
+              <select id="hsCanal" class="fs">
+                <option value="Auto" selected>Auto</option>
+                <option value="1">1</option><option value="6">6</option><option value="11">11</option>
+                <option value="36">36 (5GHz)</option><option value="40">40 (5GHz)</option>
+                <option value="44">44 (5GHz)</option><option value="48">48 (5GHz)</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg"><label class="fl">Protocole de sécurité</label>
+            <select id="hsSec" class="fs" onchange="updateHsPreview()">
+              <option value="WPA2-PSK">WPA2-PSK (recommandé)</option>
+              <option value="WPA3-SAE">WPA3-SAE (plus sécurisé)</option>
+              <option value="WPA2/WPA3">WPA2/WPA3 (mixte)</option>
+              <option value="Ouvert">Ouvert (aucun mot de passe)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- RÉSEAU LOCAL -->
+      <div class="hs-section">
+        <div class="ch"><div class="ch-ico b">🌐</div><div><div class="ct">Réseau & DHCP</div><div class="cs">Adressage IP et plage d'attribution</div></div></div>
+        <div class="cb">
+          <div class="fg"><label class="fl">Adresse IP Passerelle</label>
+            <input type="text" id="hsGateway" class="fc" placeholder="192.168.1.1" oninput="updateHsPreview()"></div>
+          <div class="frow">
+            <div class="fg"><label class="fl">IP début DHCP</label>
+              <input type="text" id="hsDhcpStart" class="fc" placeholder="192.168.1.10"></div>
+            <div class="fg"><label class="fl">IP fin DHCP</label>
+              <input type="text" id="hsDhcpEnd" class="fc" placeholder="192.168.1.99"></div>
+          </div>
+          <div class="frow">
+            <div class="fg"><label class="fl">DNS Primaire</label>
+              <input type="text" id="hsDns1" class="fc" placeholder="8.8.8.8"></div>
+            <div class="fg"><label class="fl">DNS Secondaire</label>
+              <input type="text" id="hsDns2" class="fc" placeholder="8.8.4.4"></div>
+          </div>
+          <div class="fg"><label class="fl">Bail DHCP (minutes)</label>
+            <input type="number" id="hsDhcpLease" class="fc" value="1440" min="5" placeholder="1440"></div>
+        </div>
+      </div>
+
+      <!-- PARAMÈTRES AVANCÉS -->
+      <div class="hs-section">
+        <div class="ch"><div class="ch-ico g">⚙️</div><div><div class="ct">Limites & QoS</div><div class="cs">Contrôle du débit et des connexions</div></div></div>
+        <div class="cb">
+          <div class="frow">
+            <div class="fg"><label class="fl">Débit max / client (Mbps)</label>
+              <input type="number" id="hsMaxMbps" class="fc" placeholder="10" min="1" max="1000"></div>
+            <div class="fg"><label class="fl">Clients max simultanés</label>
+              <input type="number" id="hsMaxClients" class="fc" placeholder="30" min="1" max="255"></div>
+          </div>
+          <div class="fg"><label class="fl">Nom de l'opérateur / lieu</label>
+            <input type="text" id="hsOperateur" class="fc" placeholder="Orange Guinée — Conakry" oninput="updateHsPreview()"></div>
+          <div class="fg"><label class="fl">URL de redirection (portail captif)</label>
+            <input type="text" id="hsPortal" class="fc" placeholder="http://192.168.1.1/voucher"></div>
+
+          <div style="margin-top:6px">
+            <div class="toggle-wrap">
+              <div><div class="toggle-label">Isolation des clients</div><div class="toggle-sub">Empêche les appareils de se voir entre eux</div></div>
+              <label class="toggle"><input type="checkbox" id="hsIsolation" checked><div class="toggle-slider"></div></label>
+            </div>
+            <div class="toggle-wrap">
+              <div><div class="toggle-label">Broadcast SSID</div><div class="toggle-sub">Rend le réseau visible aux appareils proches</div></div>
+              <label class="toggle"><input type="checkbox" id="hsBroadcast" checked><div class="toggle-slider"></div></label>
+            </div>
+            <div class="toggle-wrap">
+              <div><div class="toggle-label">Firewall activé</div><div class="toggle-sub">Protection des connexions entrantes</div></div>
+              <label class="toggle"><input type="checkbox" id="hsFirewall" checked><div class="toggle-slider"></div></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INFORMATIONS COMPLÉMENTAIRES -->
+      <div class="hs-section">
+        <div class="ch"><div class="ch-ico ok">📋</div><div><div class="ct">Informations</div><div class="cs">Référence matériel et notes</div></div></div>
+        <div class="cb">
+          <div class="fg"><label class="fl">Modèle du routeur / Flybox</label>
+            <input type="text" id="hsModele" class="fc" placeholder="Orange Flybox CP02 4G"></div>
+          <div class="fg"><label class="fl">Adresse MAC (optionnel)</label>
+            <input type="text" id="hsMac" class="fc" placeholder="FC:3F:FC:C0:C4:00" style="font-family:'DM Mono',monospace;letter-spacing:.05em"></div>
+          <div class="fg"><label class="fl">Emplacement / Zone</label>
+            <input type="text" id="hsZone" class="fc" placeholder="Réception, Salle principale…" oninput="updateHsPreview()"></div>
+          <div class="fg"><label class="fl">Notes internes</label>
+            <textarea id="hsNotes" class="fc" rows="3" placeholder="Réinitialisé le…, mot de passe changé le…"
+              style="resize:vertical;line-height:1.6"></textarea></div>
+        </div>
+      </div>
+
+    </div><!-- /hs-grid -->
+
+    <!-- FICHE IMPRIMABLE -->
+    <div class="card hs-noprint" style="margin-bottom:16px">
+      <div class="ch"><div class="ch-ico g">🖨️</div><div><div class="ct">Aperçu — Fiche Hotspot</div><div class="cs">Affichage à imprimer et coller près du routeur</div></div></div>
+      <div class="cb">
+        <div class="hs-fiche" id="hsFiche">
+          <div class="hs-fiche-head">
+            <div>
+              <div class="hs-fiche-brand">📡 FLYBOX · ORANGE GUINÉE</div>
+              <div style="font-size:9px;color:var(--mut);margin-top:2px" id="hsFicheZone">—</div>
+            </div>
+            <div class="hs-badge ok" id="hsFicheSec">WPA2-PSK</div>
+          </div>
+          <div class="hs-fiche-ssid">
+            <div class="hs-fiche-ssid-label">Nom du réseau WiFi</div>
+            <div class="hs-fiche-ssid-name" id="hsFicheSsid">—</div>
+          </div>
+          <div class="hs-fiche-body">
+            <div class="hs-fiche-rows" id="hsFicheRows">
+              <!-- rempli dynamiquement -->
+            </div>
+            <div class="hs-fiche-qr">
+              <img id="hsFicheQr" src="" width="110" height="110" alt="QR WiFi">
+              <div class="hs-fiche-qr-label">Scanner pour<br>se connecter</div>
+            </div>
+          </div>
+          <div class="hs-fiche-footer">
+            <div class="hs-fiche-footer-note" id="hsFicheOp">Orange Guinée</div>
+            <div class="hs-fiche-footer-note" id="hsFicheDate">—</div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:12px">
+          <button class="btn btn-gold btn-sm" onclick="printHotspotFiche()">🖨️ Imprimer cette fiche</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCÈS ADMIN FLYBOX -->
+    <div class="card hs-noprint" style="margin-bottom:16px;border-color:var(--orngb)">
+      <div class="ch">
+        <div class="ch-ico o">🔧</div>
+        <div><div class="ct">Accès Interface Admin Flybox</div><div class="cs">Panneau de configuration du routeur / Flybox 4G</div></div>
+      </div>
+      <div class="cb">
+
+        <!-- IP + statut -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+          <div style="flex:1;min-width:180px">
+            <label class="fl">URL Admin</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="text" id="hsAdminUrl" class="fc" value="http://172.25.123.1"
+                style="font-family:'DM Mono',monospace;font-size:13px;letter-spacing:.03em"
+                placeholder="http://192.168.1.1">
+              <button class="btn btn-ghost btn-sm" onclick="saveAdminUrl()" title="Mémoriser l'URL">💾</button>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:5px;padding-top:16px">
+            <div id="flyboxPingDot" style="width:10px;height:10px;border-radius:50%;background:var(--mut);
+              transition:background .3s;box-shadow:none" title="Statut inconnu"></div>
+            <div id="flyboxPingLabel" style="font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap">Non testé</div>
+          </div>
+        </div>
+
+        <!-- Bouton principal -->
+        <a id="flyboxAdminLink" href="http://172.25.123.1" target="_blank" rel="noopener"
+          class="btn btn-orange btn-full" style="margin-bottom:12px;font-size:13px;padding:13px">
+          🌐 Ouvrir l'interface admin Flybox
+        </a>
+
+        <!-- Tester la connexion -->
+        <button class="btn btn-ghost btn-sm btn-full" onclick="pingFlybox()" style="margin-bottom:16px">
+          🔌 Tester la connexion au routeur
+        </button>
+
+        <!-- Identifiants par défaut -->
+        <div style="background:var(--obs3);border:1px solid var(--gb);border-radius:var(--rs);overflow:hidden">
+          <div style="display:flex;align-items:center;justify-content:space-between;
+            padding:10px 14px;border-bottom:1px solid var(--gb)">
+            <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--dim)">
+              Identifiants par défaut
+            </div>
+            <button class="btn btn-ghost btn-xs" onclick="toggleAdminCreds(this)">👁 Afficher</button>
+          </div>
+          <div id="adminCredsBody" style="display:none;padding:10px 14px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div>
+                <div style="font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px">Utilisateur</div>
+                <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--gold);
+                  background:var(--obs);padding:8px 11px;border-radius:7px;border:1px solid var(--goldb)"
+                  id="hsAdminUser">admin</div>
+              </div>
+              <div>
+                <div style="font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px">Mot de passe</div>
+                <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--gold);
+                  background:var(--obs);padding:8px 11px;border-radius:7px;border:1px solid var(--goldb)"
+                  id="hsAdminPass">admin</div>
+              </div>
+            </div>
+            <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+              <div class="fg" style="flex:1;margin:0">
+                <label class="fl" style="margin-bottom:5px">Personnaliser utilisateur</label>
+                <input type="text" id="hsAdminUserEdit" class="fc" placeholder="admin">
+              </div>
+              <div class="fg" style="flex:1;margin:0">
+                <label class="fl" style="margin-bottom:5px">Personnaliser mot de passe</label>
+                <input type="password" id="hsAdminPassEdit" class="fc" placeholder="••••••">
+              </div>
+            </div>
+            <button class="btn btn-gold btn-sm" onclick="saveAdminCreds()" style="margin-top:10px;width:100%;justify-content:center">
+              💾 Sauvegarder les identifiants
+            </button>
+            <div style="font-size:10px;color:var(--mut);margin-top:8px;text-align:center">
+              ⚠️ Stockés en localStorage uniquement — jamais envoyés au cloud
+            </div>
+          </div>
+        </div>
+
+        <!-- Infos rapides Flybox CP02 -->
+        <div style="margin-top:14px;padding:12px 14px;background:var(--orngd);
+          border:1px solid var(--orngb);border-radius:var(--rs)">
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+            color:var(--orng);margin-bottom:8px">ℹ️ Flybox CP02 — Rappels</div>
+          <div style="display:grid;gap:5px">
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:var(--dim)">URL admin par défaut</span>
+              <span style="font-family:'DM Mono',monospace;color:var(--txt)">192.168.1.1</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:var(--dim)">URL admin actuelle (ton réseau)</span>
+              <span style="font-family:'DM Mono',monospace;color:var(--orng)" id="flyboxUrlRecap">192.168.1.1</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:var(--dim)">SSID détecté</span>
+              <span style="font-family:'DM Mono',monospace;color:var(--txt)" id="flyboxSsidRecap">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:var(--dim)">MAC Flybox</span>
+              <span style="font-family:'DM Mono',monospace;color:var(--txt)" id="flyboxMacRecap">—</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SQL Supabase pour hotspot_config -->
+    <div class="card hs-noprint" style="border-color:var(--infob)">
+      <div class="ch"><div class="ch-ico b">🗄️</div><div><div class="ct">Table Supabase — hotspot_config</div><div class="cs">À exécuter si vous utilisez la synchronisation cloud</div></div></div>
+      <div class="cb">
+        <div class="sql-block">create table if not exists hotspot_config (
+  id          text primary key default 'main',
+  ssid        text,
+  password    text,
+  bande       text,
+  canal       text,
+  securite    text,
+  gateway     text,
+  dhcp_start  text,
+  dhcp_end    text,
+  dns1        text,
+  dns2        text,
+  dhcp_lease  int  default 1440,
+  max_mbps    int,
+  max_clients int,
+  operateur   text,
+  portal_url  text,
+  isolation   boolean default true,
+  broadcast   boolean default true,
+  firewall    boolean default true,
+  modele      text,
+  mac_address text,
+  zone        text,
+  notes       text,
+  updated_at  timestamptz default now()
+);
+
+-- Une seule ligne de config (id = 'main')
+alter table hotspot_config enable row level security;
+create policy "Auth read/write" on hotspot_config for all using (auth.role() = 'anon');</div>
+        <button class="btn btn-ghost btn-sm" onclick="copyHsSQL()" style="margin-top:8px">📋 Copier le SQL</button>
+      </div>
+    </div>
+
+  </div><!-- /viewHotspot -->
+
+</main>
+
+<!-- ══ PWA INSTALL BANNER (mobile) ══ -->
+<div class="pwa-banner" id="pwaBanner">
+  <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(145deg,#FF7020,#D94F00);
+    display:grid;place-items:center;font-size:22px;flex-shrink:0;
+    box-shadow:0 3px 0 #8B3200,0 6px 14px rgba(217,79,0,.3)">📡</div>
+  <div style="flex:1;min-width:0">
+    <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--txt)">Installer Flybox Vouchers</div>
+    <div style="font-size:11px;color:var(--dim);margin-top:2px">Accès rapide · fonctionne hors ligne</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+    <button class="btn btn-orange btn-sm" onclick="pwaInstall()" style="font-size:10px">⬇️ Installer</button>
+    <button class="btn btn-ghost btn-xs" onclick="pwaDismiss()" style="font-size:10px">Plus tard</button>
+  </div>
+</div>
+
+<!-- ══ LOGIN MODAL ══ -->
+<div class="mo" id="moLogin">
+  <div class="md">
+    <div class="mh"><div class="mt">🔐 Accès Administration</div><button class="btn btn-ghost btn-sm" onclick="closeMo('moLogin')">✕</button></div>
+    <div class="mb">
+      <div id="loginErr" style="display:none;background:var(--errd);border:1px solid var(--errb);border-radius:8px;padding:10px 13px;font-size:12px;color:#E74C3C;margin-bottom:13px">Identifiants incorrects.</div>
+      <div class="fg"><label class="fl">Utilisateur</label><input type="text" id="lu" class="fc" placeholder="admin"></div>
+      <div class="fg"><label class="fl">Mot de passe</label><input type="password" id="lp" class="fc" placeholder="••••••••"></div>
+      <button class="btn btn-orange btn-full" onclick="doLogin()" style="margin-top:4px">Connexion</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DETAIL MODAL ══ -->
+<div class="mo" id="moDetail">
+  <div class="md">
+    <div class="mh"><div class="mt">🎟️ Détail Voucher</div><button class="btn btn-ghost btn-sm" onclick="closeMo('moDetail')">✕</button></div>
+    <div class="mb" id="moDetailBody"></div>
+    <div class="mf">
+      <button class="btn btn-danger btn-sm" id="moDelBtn">🗑 Supprimer</button>
+      <button class="btn btn-ghost btn-sm" id="moBlockBtn" style="display:none">🔒 Bloquer</button>
+      <button class="btn btn-ok btn-sm"    id="moUnblockBtn" style="display:none">🔓 Débloquer</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeMo('moDetail')">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CRUD MODAL (Créer / Éditer) ══ -->
+<div class="mo" id="moCRUD">
+  <div class="md" style="max-width:560px">
+    <div class="mh">
+      <div class="mt" id="crudTitle">➕ Nouveau Voucher</div>
+      <button class="btn btn-ghost btn-sm" onclick="closeMo('moCRUD')">✕</button>
+    </div>
+    <div class="mb">
+
+      <!-- CODE -->
+      <div class="fg">
+        <label class="fl">Code voucher</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="crudCode" class="fc" placeholder="FBX-XXXX-XXXX" style="font-family:'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;flex:1">
+          <button class="btn btn-ghost btn-sm" onclick="crudAutoCode()" id="crudAutoBtn" title="Générer un code automatique">🎲</button>
+        </div>
+        <div style="font-size:10px;color:var(--dim);margin-top:5px" id="crudCodeHint">Laissez vide pour générer automatiquement</div>
+      </div>
+
+      <!-- PLAN -->
+      <div class="fg">
+        <label class="fl">Forfait</label>
+        <select id="crudPlan" class="fs" onchange="crudPlanChange()">
+          <option value="">— Choisir un forfait —</option>
+          <option value="30m">30 min — 5 000 GNF</option>
+          <option value="1h">1 Heure — 10 000 GNF</option>
+          <option value="3h">3 Heures — 20 000 GNF</option>
+          <option value="12h">12 Heures — 35 000 GNF</option>
+          <option value="24h">24 Heures — 50 000 GNF</option>
+          <option value="7j">1 Semaine — 200 000 GNF</option>
+          <option value="30j">1 Mois — 500 000 GNF</option>
+          <option value="custom">Personnalisé</option>
+        </select>
+      </div>
+
+      <!-- CUSTOM FIELDS (affichés si forfait = custom) -->
+      <div id="crudCustom" style="display:none">
+        <div class="frow3">
+          <div class="fg"><label class="fl">Durée (chiffre)</label><input type="number" id="crudDur" class="fc" placeholder="24" min="1"></div>
+          <div class="fg">
+            <label class="fl">Unité</label>
+            <select id="crudUnit" class="fs">
+              <option value="min">min</option>
+              <option value="h">h</option>
+              <option value="j">j</option>
+            </select>
+          </div>
+          <div class="fg"><label class="fl">Quota</label><input type="text" id="crudQuota" class="fc" value="Illimité" placeholder="Illimité / 5GB"></div>
+        </div>
+      </div>
+
+      <div class="frow">
+        <div class="fg"><label class="fl">Prix (GNF)</label><input type="number" id="crudPrice" class="fc" placeholder="50000" min="0"></div>
+        <div class="fg"><label class="fl">Validité stock (jours)</label><input type="number" id="crudValidity" class="fc" value="30" min="1"></div>
+      </div>
+
+      <!-- STATUT -->
+      <div class="fg">
+        <label class="fl">Statut</label>
+        <select id="crudStatut" class="fs" onchange="crudStatutChange()">
+          <option value="Disponible">Disponible</option>
+          <option value="Utilisé">Utilisé</option>
+          <option value="Expiré">Expiré</option>
+        </select>
+      </div>
+
+      <!-- DATES (affichées si Utilisé) -->
+      <div id="crudDates" style="display:none">
+        <div class="frow">
+          <div class="fg"><label class="fl">Activé le</label><input type="text" id="crudActivated" class="fc" placeholder="jj/mm/aaaa hh:mm"></div>
+          <div class="fg"><label class="fl">Expire le</label><input type="text" id="crudExpires" class="fc" placeholder="jj/mm/aaaa"></div>
+        </div>
+      </div>
+
+      <!-- ERREUR -->
+      <div id="crudErr" style="display:none;background:var(--errd);border:1px solid var(--errb);border-radius:8px;padding:10px 13px;font-size:12px;color:#E74C3C;margin-top:4px"></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-ghost btn-sm" onclick="closeMo('moCRUD')">Annuler</button>
+      <button class="btn btn-orange" onclick="saveCRUD()" id="crudSaveBtn">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════
+const PLANS = [
+  {id:'30m', label:'30 min',    dur:30,  unit:'min', quota:'Illimité', price:5000,   color:'#3498DB'},
+  {id:'1h',  label:'1 Heure',   dur:60,  unit:'min', quota:'Illimité', price:10000,  color:'#27AE60'},
+  {id:'3h',  label:'3 Heures',  dur:180, unit:'min', quota:'Illimité', price:20000,  color:'#8E44AD'},
+  {id:'12h', label:'12 Heures', dur:12,  unit:'h',   quota:'Illimité', price:35000,  color:'#E67E22'},
+  {id:'24h', label:'24 Heures', dur:24,  unit:'h',   quota:'Illimité', price:50000,  color:'#C0392B'},
+  {id:'7j',  label:'1 Semaine', dur:7,   unit:'j',   quota:'Illimité', price:200000, color:'#C9A84C'},
+  {id:'30j', label:'1 Mois',    dur:30,  unit:'j',   quota:'Illimité', price:500000, color:'#FF6200'},
+];
+
+let vouchers   = JSON.parse(localStorage.getItem('fbx_v3') || '[]');
+let isAdmin    = false;
+let selPlan    = PLANS[1];
+let selected   = new Set();
+let pendingV   = '';
+let sbClient   = null;
+let sbChannel  = null;
+let CREDS      = JSON.parse(localStorage.getItem('fbx_creds') || '{"u":"admin","p":"flybox2025"}');
+
+// ── Firebase ──
+let fbApp      = null;
+let fbDb       = null;
+let fbUnsub    = null;  // onSnapshot unsubscribe
+
+// ── Offline queue ──
+// Chaque entrée : { op:'insert'|'update'|'delete', payload: v | [v,...] | [id,...] }
+let pendingQueue = JSON.parse(localStorage.getItem('fbx_queue') || '[]');
+let isOnline     = navigator.onLine;
+
+function saveQueue() {
+  localStorage.setItem('fbx_queue', JSON.stringify(pendingQueue));
+  updateQueuePill();
+}
+
+function updateQueuePill() {
+  const pill  = document.getElementById('queuePill');
+  const count = document.getElementById('queueCount');
+  if (!pill || !count) return;
+  if (pendingQueue.length > 0 && isOnline) {
+    pill.classList.add('visible');
+    count.textContent = pendingQueue.length;
+  } else {
+    pill.classList.remove('visible');
+  }
+}
+
+function updateOfflinePill() {
+  const pill = document.getElementById('offlinePill');
+  if (!pill) return;
+  pill.classList.toggle('visible', !isOnline);
+}
+
+window.addEventListener('online',  handleOnline);
+window.addEventListener('offline', handleOffline);
+
+function handleOffline() {
+  isOnline = false;
+  updateOfflinePill();
+  toast('📡 Connexion perdue — mode hors ligne activé', 'err');
+}
+
+async function handleOnline() {
+  isOnline = true;
+  updateOfflinePill();
+  toast('✅ Connexion rétablie — synchronisation en cours…', 'ok');
+  // Tenter reconnexion Supabase
+  if (!sbClient) {
+    const cfg = JSON.parse(localStorage.getItem('fbx_supa') || 'null');
+    if (cfg && cfg.url && cfg.key) await connectSupabase(cfg.url, cfg.key);
+  }
+  // Tenter reconnexion Firebase
+  if (!fbDb) {
+    const cfg = JSON.parse(localStorage.getItem('fbx_fire') || 'null');
+    if (cfg && cfg.apiKey && cfg.projectId) await connectFirebase(cfg);
+  }
+  // Vider la file d'attente
+  await flushQueue();
+}
+
+async function flushQueue() {
+  if (!pendingQueue.length) { updateQueuePill(); return; }
+  if (!sbClient && !fbDb)   { updateQueuePill(); return; }
+
+  const toProcess   = [...pendingQueue];
+  pendingQueue      = [];
+  saveQueue();
+
+  let errors = 0;
+  for (const item of toProcess) {
+    try {
+      if (item.op === 'insert') {
+        if (sbClient) {
+          const {error} = await sbClient.from('vouchers').insert(item.payload.map(localToDB));
+          if (error) throw error;
+        }
+        if (fbDb) await fbSaveNew(item.payload);
+      } else if (item.op === 'update') {
+        if (sbClient) {
+          const {error} = await sbClient.from('vouchers').update(localToDB(item.payload)).eq('id', item.payload.id);
+          if (error) throw error;
+        }
+        if (fbDb) await fbSaveUpdate(item.payload);
+      } else if (item.op === 'delete') {
+        if (sbClient) {
+          const {error} = await sbClient.from('vouchers').delete().in('id', item.payload);
+          if (error) throw error;
+        }
+        if (fbDb) await fbDeleteDocs(item.payload);
+      }
+    } catch(e) {
+      errors++;
+      pendingQueue.push(item); // remettre en file
+    }
+  }
+  saveQueue();
+  if (errors === 0) {
+    toast('☁️ ' + toProcess.length + ' opération(s) synchronisée(s)', 'ok');
+  } else {
+    toast('⚠️ ' + errors + ' opération(s) non synchronisée(s) — réessai au prochain retour réseau', 'err');
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+function init() {
+  buildPlans();
+  buildPlanFilter();
+  loadSupabaseConfig();
+  checkExpired();
+  showView('client');
+  updateOfflinePill();
+  updateQueuePill();
+  initPWA();
+  // Auto-fill from URL param (QR code scan)
+  const params = new URLSearchParams(window.location.search);
+  const code   = params.get('code');
+  if (code) {
+    document.getElementById('codeInp').value = code.toUpperCase();
+    setTimeout(checkCode, 400);
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  PLANS GRID
+// ═══════════════════════════════════════════════
+function buildPlans() {
+  document.getElementById('plansGrid').innerHTML = PLANS.map((p, i) => `
+    <div class="plan ${i===1?'selected':''}" onclick="selectPlan('${p.id}')" id="pl_${p.id}">
+      <div class="plan-check">✓</div>
+      <div class="plan-dur">${p.label}</div>
+      <div class="plan-info">${p.quota} · ${p.dur}${p.unit}</div>
+      <div class="plan-price">${fmt(p.price)} GNF</div>
+    </div>`).join('');
+}
+
+function selectPlan(id) {
+  document.querySelectorAll('.plan').forEach(el => el.classList.remove('selected'));
+  document.getElementById('pl_' + id)?.classList.add('selected');
+  selPlan = PLANS.find(p => p.id === id);
+}
+
+function buildPlanFilter() {
+  const sel = document.getElementById('fPlan');
+  PLANS.forEach(p => {
+    const o = document.createElement('option');
+    o.value = p.label; o.textContent = p.label; sel.appendChild(o);
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  VIEWS
+// ═══════════════════════════════════════════════
+function showView(v) {
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  const map = {client:'Client',gen:'Gen',list:'List',dash:'Dash',settings:'Settings',hotspot:'Hotspot'};
+  const el  = document.getElementById('view' + (map[v] || 'Client'));
+  if (el) el.classList.add('active');
+  if (v === 'list')     { checkExpired(); renderList(); }
+  if (v === 'dash')     { checkExpired(); renderDash(); }
+  if (v === 'settings') { loadSettingsUI(); }
+  if (v === 'hotspot')  { loadHotspotUI(); }
+  if (v === 'client')   { initPortal(); }
+}
+
+function requireAdmin(v) {
+  if (isAdmin) { showView(v); }
+  else { pendingV = v; openMo('moLogin'); }
+}
+
+// ═══════════════════════════════════════════════
+//  LOGIN
+// ═══════════════════════════════════════════════
+function doLogin() {
+  const u = document.getElementById('lu').value.trim();
+  const p = document.getElementById('lp').value;
+  if (u === CREDS.u && p === CREDS.p) {
+    isAdmin = true;
+    document.getElementById('btnOut').style.display = 'flex';
+    document.getElementById('loginErr').style.display = 'none';
+    document.getElementById('lu').value = '';
+    document.getElementById('lp').value = '';
+    closeMo('moLogin');
+    toast('✅ Connecté', 'ok');
+    showView(pendingV || 'dash');
+    startMonitor();
+    updateMonitorBar();
+    requestNotifPermission();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+  }
+}
+
+function logout() {
+  isAdmin = false;
+  document.getElementById('btnOut').style.display = 'none';
+  if (monitorTimer) { clearInterval(monitorTimer); monitorTimer = null; }
+  const bar = document.getElementById('monitorBar');
+  if (bar) bar.classList.remove('visible');
+  showView('client');
+  toast('Déconnexion effectuée', '');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('moLogin').classList.contains('open')) doLogin();
+});
+
+function changePass() {
+  const p1 = document.getElementById('newPass').value;
+  const p2 = document.getElementById('newPass2').value;
+  if (!p1 || p1.length < 6) { toast('Mot de passe trop court (min 6 car.)', 'err'); return; }
+  if (p1 !== p2) { toast('Les mots de passe ne correspondent pas', 'err'); return; }
+  CREDS.p = p1;
+  localStorage.setItem('fbx_creds', JSON.stringify(CREDS));
+  document.getElementById('newPass').value = '';
+  document.getElementById('newPass2').value = '';
+  toast('✅ Mot de passe mis à jour', 'ok');
+}
+
+// ═══════════════════════════════════════════════
+//  SUPABASE
+// ═══════════════════════════════════════════════
+function loadSupabaseConfig() {
+  const cfg = JSON.parse(localStorage.getItem('fbx_supa') || 'null');
+  if (cfg && cfg.url && cfg.key) {
+    document.getElementById('supUrl').value = cfg.url;
+    document.getElementById('supKey').value = cfg.key;
+    connectSupabase(cfg.url, cfg.key);
+  }
+  loadFirebaseConfig();
+}
+
+function loadSettingsUI() {
+  const cfg = JSON.parse(localStorage.getItem('fbx_supa') || 'null');
+  if (cfg) {
+    document.getElementById('supUrl').value = cfg.url || '';
+    document.getElementById('supKey').value = cfg.key || '';
+  }
+  updateSupUI();
+  // Firebase
+  const fcfg = JSON.parse(localStorage.getItem('fbx_fire') || 'null');
+  if (fcfg) {
+    if (fcfg.apiKey)     document.getElementById('fireApiKey').value     = fcfg.apiKey;
+    if (fcfg.projectId)  document.getElementById('fireProjectId').value  = fcfg.projectId;
+    if (fcfg.authDomain) document.getElementById('fireAuthDomain').value = fcfg.authDomain;
+    if (fcfg.appId)      document.getElementById('fireAppId').value      = fcfg.appId;
+  }
+  updateFirebaseUI();
+}
+
+function saveSupabase() {
+  const url = document.getElementById('supUrl').value.trim();
+  const key = document.getElementById('supKey').value.trim();
+  if (!url || !key) { toast('Remplissez URL et Anon Key', 'err'); return; }
+  localStorage.setItem('fbx_supa', JSON.stringify({url, key}));
+  connectSupabase(url, key);
+}
+
+function clearSupabase() {
+  localStorage.removeItem('fbx_supa');
+  sbClient = null;
+  if (sbChannel) { sbChannel.unsubscribe(); sbChannel = null; }
+  updateSyncDot('off', 'Non configuré');
+  updateSupUI();
+  toast('Supabase déconnecté — localStorage utilisé', '');
+}
+
+async function connectSupabase(url, key) {
+  try {
+    sbClient = supabase.createClient(url, key);
+    // Test + pull data
+    const {data, error} = await sbClient.from('vouchers').select('*').order('created', {ascending: false});
+    if (error) throw error;
+    vouchers = (data || []).map(dbToLocal);
+    saveLocal();
+    updateSyncDot('ok', 'Connecté à Supabase ✓');
+    subscribeRealtime();
+    toast('☁️ Supabase connecté — données synchronisées', 'ok');
+    updateSupUI();
+  } catch (err) {
+    sbClient = null;
+    updateSyncDot('err', 'Erreur : ' + (err.message || 'connexion échouée'));
+    toast('❌ Supabase : ' + (err.message || 'erreur'), 'err');
+    updateSupUI();
+  }
+}
+
+async function testConn() {
+  const url = document.getElementById('supUrl').value.trim();
+  const key = document.getElementById('supKey').value.trim();
+  if (!url || !key) { toast('Entrez URL et Key d\'abord', 'err'); return; }
+  toast('🔌 Test en cours…', 'info');
+  try {
+    const c = supabase.createClient(url, key);
+    const {error} = await c.from('vouchers').select('id').limit(1);
+    if (error) throw error;
+    toast('✅ Connexion réussie !', 'ok');
+  } catch (err) {
+    toast('❌ Échec : ' + (err.message || 'vérifiez URL/Key et la table'), 'err');
+  }
+}
+
+function subscribeRealtime() {
+  if (!sbClient) return;
+  if (sbChannel) sbChannel.unsubscribe();
+  sbChannel = sbClient.channel('vouchers_changes')
+    .on('postgres_changes', {event:'*', schema:'public', table:'vouchers'}, payload => {
+      handleRealtimeEvent(payload);
+    })
+    .subscribe();
+}
+
+function handleRealtimeEvent(payload) {
+  const ev = payload.eventType;
+  const row = payload.new || payload.old;
+  if (!row) return;
+  if (ev === 'INSERT') {
+    if (!vouchers.find(v => v.id === row.id)) vouchers.unshift(dbToLocal(row));
+  } else if (ev === 'UPDATE') {
+    const idx = vouchers.findIndex(v => v.id === row.id);
+    if (idx >= 0) vouchers[idx] = dbToLocal(row);
+  } else if (ev === 'DELETE') {
+    vouchers = vouchers.filter(v => v.id !== row.id);
+  }
+  saveLocal();
+  const active = document.querySelector('.view.active');
+  if (active && active.id === 'viewList') renderList();
+  if (active && active.id === 'viewDash') renderDash();
+}
+
+function dbToLocal(row) {
+  return {
+    id: row.id, plan: row.plan, planId: row.plan_id,
+    dur: row.dur, unit: row.unit, quota: row.quota,
+    price: row.price, statut: row.statut,
+    created: row.created, activated: row.activated,
+    expires: row.expires, validity: row.validity,
+    clientIp:  row.client_ip  || null,
+    clientMac: row.client_mac || null
+  };
+}
+
+function localToDB(v) {
+  return {
+    id: v.id, plan: v.plan, plan_id: v.planId,
+    dur: v.dur, unit: v.unit, quota: v.quota,
+    price: v.price, statut: v.statut,
+    created: v.created, activated: v.activated || null,
+    expires: v.expires || null, validity: v.validity,
+    client_ip:  v.clientIp  || null,
+    client_mac: v.clientMac || null
+  };
+}
+
+function updateSyncDot(state, msg) {
+  const dot = document.getElementById('syncDot');
+  dot.className = 'sync-dot ' + state;
+  dot.title = msg;
+}
+
+function updateSupUI() {
+  const dot = document.getElementById('supDot');
+  const msg = document.getElementById('supMsg');
+  if (!dot || !msg) return;
+  if (sbClient) {
+    dot.className = 'sup-dot ok';
+    msg.textContent = 'Connecté à Supabase — sync temps réel actif';
+  } else {
+    const cfg = JSON.parse(localStorage.getItem('fbx_supa') || 'null');
+    if (cfg && cfg.url) {
+      dot.className = 'sup-dot err';
+      msg.textContent = 'Erreur de connexion — localStorage utilisé en fallback';
+    } else {
+      dot.className = 'sup-dot off';
+      msg.textContent = 'Non configuré — données en localStorage uniquement';
+    }
+  }
+}
+
+function copySQL() {
+  navigator.clipboard.writeText(document.getElementById('sqlBlock').textContent)
+    .then(() => toast('✅ SQL copié', 'ok'))
+    .catch(() => toast('Sélectionnez manuellement le texte SQL', 'err'));
+}
+
+// ═══════════════════════════════════════════════
+//  FIREBASE
+// ═══════════════════════════════════════════════
+function autoFillAuthDomain() {
+  const pid  = document.getElementById('fireProjectId').value.trim();
+  const auth = document.getElementById('fireAuthDomain');
+  if (auth && (!auth.value || auth.value.endsWith('.firebaseapp.com'))) {
+    auth.value = pid ? pid + '.firebaseapp.com' : '';
+  }
+}
+
+function loadFirebaseConfig() {
+  const cfg = JSON.parse(localStorage.getItem('fbx_fire') || 'null');
+
+  // Defaults réels — projet noldexfleet-e4fec
+  const FIRE_DEFAULTS = {
+    apiKey:     'AIzaSyDk167r521Gr8SOlHLY1eclRtfXItsy_Jo',
+    projectId:  'noldexfleet-e4fec',
+    authDomain: 'noldexfleet-e4fec.firebaseapp.com',
+    appId:      '1:466170257450:web:433e05d11b4ace025aa353'
+  };
+
+  const merged = Object.assign({}, FIRE_DEFAULTS, cfg || {});
+
+  if (document.getElementById('fireApiKey'))     document.getElementById('fireApiKey').value     = merged.apiKey;
+  if (document.getElementById('fireProjectId'))  document.getElementById('fireProjectId').value  = merged.projectId;
+  if (document.getElementById('fireAuthDomain')) document.getElementById('fireAuthDomain').value = merged.authDomain;
+  if (document.getElementById('fireAppId'))      document.getElementById('fireAppId').value      = merged.appId;
+
+  // Connecter automatiquement si pas déjà connecté
+  if (!fbDb) connectFirebase(merged);
+}
+
+function saveFirebase() {
+  const cfg = {
+    apiKey:     document.getElementById('fireApiKey').value.trim(),
+    projectId:  document.getElementById('fireProjectId').value.trim(),
+    authDomain: document.getElementById('fireAuthDomain').value.trim(),
+    appId:      document.getElementById('fireAppId').value.trim()
+  };
+  if (!cfg.apiKey || !cfg.projectId) { toast('Remplissez au minimum API Key et Project ID', 'err'); return; }
+  if (!cfg.authDomain) cfg.authDomain = cfg.projectId + '.firebaseapp.com';
+  localStorage.setItem('fbx_fire', JSON.stringify(cfg));
+  connectFirebase(cfg);
+}
+
+function clearFirebase() {
+  localStorage.removeItem('fbx_fire');
+  if (fbUnsub) { fbUnsub(); fbUnsub = null; }
+  fbDb  = null;
+  fbApp = null;
+  updateFirebaseDot('off', 'Déconnecté');
+  updateFirebaseUI();
+  toast('🔥 Firebase déconnecté', '');
+}
+
+async function connectFirebase(cfg) {
+  try {
+    // Éviter la duplication d'app Firebase
+    if (fbApp) {
+      try { await firebase.app('flybox').delete(); } catch(e) {}
+    }
+    fbApp = firebase.initializeApp(cfg, 'flybox');
+    fbDb  = firebase.firestore(fbApp);
+    // Test : lire un document
+    await fbDb.collection('vouchers').limit(1).get();
+    updateFirebaseDot('ok', 'Connecté à Firebase ✓');
+    toast('🔥 Firebase connecté', 'ok');
+    updateFirebaseUI();
+    fbSubscribeRealtime();
+    // Pull données si Supabase non connecté
+    if (!sbClient) await fbPullAll();
+  } catch (err) {
+    fbDb  = null;
+    updateFirebaseDot('err', 'Erreur : ' + (err.message || 'connexion échouée'));
+    toast('❌ Firebase : ' + (err.message || 'erreur'), 'err');
+    updateFirebaseUI();
+  }
+}
+
+async function testFirebase() {
+  const cfg = {
+    apiKey:     document.getElementById('fireApiKey').value.trim(),
+    projectId:  document.getElementById('fireProjectId').value.trim(),
+    authDomain: document.getElementById('fireAuthDomain').value.trim() ||
+                (document.getElementById('fireProjectId').value.trim() + '.firebaseapp.com'),
+    appId:      document.getElementById('fireAppId').value.trim()
+  };
+  if (!cfg.apiKey || !cfg.projectId) { toast('Entrez API Key et Project ID d\'abord', 'err'); return; }
+  toast('🔌 Test Firebase en cours…', 'info');
+  try {
+    let testApp;
+    try { testApp = firebase.app('fbx_test'); } catch(e) {}
+    if (!testApp) testApp = firebase.initializeApp(cfg, 'fbx_test');
+    const db = firebase.firestore(testApp);
+    await db.collection('vouchers').limit(1).get();
+    toast('✅ Firebase joignable !', 'ok');
+    await testApp.delete();
+  } catch (err) {
+    toast('❌ Firebase : ' + (err.message || 'vérifiez la config et les règles Firestore'), 'err');
+    try { firebase.app('fbx_test').delete(); } catch(e) {}
+  }
+}
+
+function fbSubscribeRealtime() {
+  if (!fbDb) return;
+  if (fbUnsub) fbUnsub();
+  fbUnsub = fbDb.collection('vouchers').onSnapshot(snap => {
+    snap.docChanges().forEach(change => {
+      const doc  = change.doc;
+      const data = fbDocToLocal(doc);
+      if (change.type === 'added') {
+        if (!vouchers.find(v => v.id === data.id)) vouchers.unshift(data);
+      } else if (change.type === 'modified') {
+        const idx = vouchers.findIndex(v => v.id === data.id);
+        if (idx >= 0) vouchers[idx] = data; else vouchers.unshift(data);
+      } else if (change.type === 'removed') {
+        vouchers = vouchers.filter(v => v.id !== data.id);
+      }
+    });
+    saveLocal();
+    if (isAdmin && document.getElementById('viewList').classList.contains('active')) renderList();
+    if (isAdmin && document.getElementById('viewDash').classList.contains('active'))  renderDash();
+  }, err => {
+    toast('⚠️ Firebase realtime : ' + err.message, 'err');
+  });
+}
+
+async function fbPullAll() {
+  if (!fbDb) return;
+  try {
+    const snap = await fbDb.collection('vouchers').orderBy('created', 'desc').get();
+    if (!snap.empty) {
+      vouchers = snap.docs.map(fbDocToLocal);
+      saveLocal();
+      toast('🔥 Firebase : données synchronisées (' + vouchers.length + ' vouchers)', 'ok');
+    }
+  } catch(e) { /* collection vide ou champ manquant */ }
+}
+
+function fbDocToLocal(doc) {
+  const d = doc.data ? doc.data() : doc;
+  return {
+    id:        doc.id || d.id,
+    plan:      d.plan      || '',
+    planId:    d.plan_id   || d.planId   || '',
+    dur:       d.dur       || 0,
+    unit:      d.unit      || 'h',
+    quota:     d.quota     || 'Illimité',
+    price:     d.price     || 0,
+    statut:    d.statut    || 'Disponible',
+    created:   d.created   || '',
+    activated: d.activated || null,
+    expires:   d.expires   || null,
+    validity:  d.validity  || 30
+  };
+}
+
+function localToFbDoc(v) {
+  return {
+    plan:      v.plan,
+    plan_id:   v.planId,
+    dur:       v.dur,
+    unit:      v.unit,
+    quota:     v.quota,
+    price:     v.price,
+    statut:    v.statut,
+    created:   v.created,
+    activated: v.activated || null,
+    expires:   v.expires   || null,
+    validity:  v.validity
+  };
+}
+
+async function fbSaveNew(batch) {
+  if (!fbDb) return;
+  const col = fbDb.collection('vouchers');
+  const writes = fbDb.batch ? fbDb.batch() : null;
+  if (writes) {
+    batch.forEach(v => writes.set(col.doc(v.id), localToFbDoc(v)));
+    await writes.commit();
+  } else {
+    await Promise.all(batch.map(v => col.doc(v.id).set(localToFbDoc(v))));
+  }
+}
+
+async function fbSaveUpdate(v) {
+  if (!fbDb) return;
+  await fbDb.collection('vouchers').doc(v.id).set(localToFbDoc(v), {merge: true});
+}
+
+async function fbDeleteDocs(ids) {
+  if (!fbDb || !ids.length) return;
+  const col    = fbDb.collection('vouchers');
+  const writes = fbDb.batch ? fbDb.batch() : null;
+  if (writes) {
+    ids.forEach(id => writes.delete(col.doc(id)));
+    await writes.commit();
+  } else {
+    await Promise.all(ids.map(id => col.doc(id).delete()));
+  }
+}
+
+function updateFirebaseDot(state, msg) {
+  const dot = document.getElementById('fireDot');
+  const msgEl = document.getElementById('fireMsg');
+  if (dot)   dot.className   = 'sup-dot ' + state;
+  if (msgEl) msgEl.textContent = msg;
+}
+
+function updateFirebaseUI() {
+  const dot   = document.getElementById('fireDot');
+  const msg   = document.getElementById('fireMsg');
+  if (!dot || !msg) return;
+  if (fbDb) {
+    dot.className    = 'sup-dot ok';
+    msg.textContent  = 'Connecté à Firebase Firestore — sync temps réel actif';
+  } else {
+    const cfg = JSON.parse(localStorage.getItem('fbx_fire') || 'null');
+    if (cfg && cfg.apiKey) {
+      dot.className   = 'sup-dot err';
+      msg.textContent = 'Erreur de connexion — vérifiez la config et les règles';
+    } else {
+      dot.className   = 'sup-dot off';
+      msg.textContent = 'Non configuré';
+    }
+  }
+  // Sync dot header : allumer en vert si l'un ou l'autre est connecté
+  if (fbDb || sbClient) updateSyncDot('ok', fbDb && sbClient ? 'Supabase + Firebase connectés' : fbDb ? 'Firebase connecté' : 'Supabase connecté');
+}
+
+function copyFireRules() {
+  const rules = document.querySelector('#viewSettings .sql-block:last-of-type');
+  const text  = rules ? rules.textContent : '';
+  navigator.clipboard.writeText(text)
+    .then(() => toast('✅ Règles Firestore copiées', 'ok'))
+    .catch(() => toast('Sélectionnez manuellement les règles', 'err'));
+}
+
+// ═══════════════════════════════════════════════
+//  SAVE / LOAD
+// ═══════════════════════════════════════════════
+function saveLocal() {
+  localStorage.setItem('fbx_v3', JSON.stringify(vouchers));
+}
+
+async function save() {
+  saveLocal();
+}
+
+async function saveNew(batch) {
+  if (!isOnline || (!sbClient && !fbDb)) {
+    pendingQueue.push({ op: 'insert', payload: batch });
+    saveQueue();
+    toast('📦 ' + batch.length + ' voucher(s) mis en file — sync au retour réseau', 'info');
+    return;
+  }
+  if (sbClient) {
+    const rows = batch.map(localToDB);
+    const {error} = await sbClient.from('vouchers').insert(rows);
+    if (error) { toast('⚠️ Supabase insert : ' + error.message, 'err'); }
+  }
+  if (fbDb) {
+    try { await fbSaveNew(batch); }
+    catch(e) { toast('⚠️ Firebase insert : ' + e.message, 'err'); }
+  }
+}
+
+async function saveUpdate(v) {
+  if (!isOnline || (!sbClient && !fbDb)) {
+    // Mettre à jour en file (dédoublonner par id)
+    const idx = pendingQueue.findIndex(q => q.op === 'update' && q.payload.id === v.id);
+    if (idx >= 0) pendingQueue[idx].payload = v;
+    else pendingQueue.push({ op: 'update', payload: v });
+    saveQueue();
+  } else {
+    if (sbClient) {
+      const {error} = await sbClient.from('vouchers').update(localToDB(v)).eq('id', v.id);
+      if (error) { toast('⚠️ Supabase update : ' + error.message, 'err'); }
+    }
+    if (fbDb) {
+      try { await fbSaveUpdate(v); }
+      catch(e) { toast('⚠️ Firebase update : ' + e.message, 'err'); }
+    }
+  }
+  saveLocal();
+}
+
+async function deleteFromDB(ids) {
+  if (!isOnline || (!sbClient && !fbDb)) {
+    pendingQueue.push({ op: 'delete', payload: ids });
+    saveQueue();
+  } else {
+    if (sbClient) {
+      const {error} = await sbClient.from('vouchers').delete().in('id', ids);
+      if (error) { toast('⚠️ Supabase delete : ' + error.message, 'err'); }
+    }
+    if (fbDb) {
+      try { await fbDeleteDocs(ids); }
+      catch(e) { toast('⚠️ Firebase delete : ' + e.message, 'err'); }
+    }
+  }
+  saveLocal();
+}
+
+// ═══════════════════════════════════════════════
+//  GENERATE
+// ═══════════════════════════════════════════════
+async function generateVouchers() {
+  const qty      = Math.min(100, Math.max(1, parseInt(document.getElementById('gQty').value) || 1));
+  const prefix   = (document.getElementById('gPrefix').value || 'FBX').toUpperCase().slice(0, 5);
+  const validity = Math.max(1, parseInt(document.getElementById('gValidity').value) || 30);
+
+  if (!selPlan) { toast('Choisissez un forfait', 'err'); return; }
+
+  const created = new Date().toLocaleDateString('fr-FR');
+  const batch   = [];
+
+  for (let i = 0; i < qty; i++) {
+    batch.push({
+      id: genCode(prefix), plan: selPlan.label, planId: selPlan.id,
+      dur: selPlan.dur, unit: selPlan.unit, quota: selPlan.quota,
+      price: selPlan.price, statut: 'Disponible',
+      created, activated: null, expires: null, validity
+    });
+  }
+
+  vouchers = [...batch, ...vouchers];
+  saveLocal();
+  await saveNew(batch);
+
+  // Build voucher preview cards
+  const baseURL = window.location.href.split('?')[0];
+  document.getElementById('previewTitle').textContent = qty + ' voucher(s) — ' + selPlan.label;
+  document.getElementById('voucherPreview').innerHTML = batch.map(v => vcardHTML(v, baseURL)).join('');
+  document.getElementById('previewWrap').style.display = 'block';
+  document.getElementById('previewWrap').scrollIntoView({behavior: 'smooth'});
+  toast('✅ ' + qty + ' voucher(s) créé(s)', 'ok');
+}
+
+function genCode(prefix) {
+  const ch = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const seg = () => [...Array(4)].map(() => ch[Math.random() * ch.length | 0]).join('');
+  let code;
+  do { code = prefix + '-' + seg() + '-' + seg(); }
+  while (vouchers.find(v => v.id === code));
+  return code;
+}
+
+function vcardHTML(v, baseURL) {
+  const qrData = encodeURIComponent((baseURL || '') + '?code=' + v.id);
+  const qrURL  = 'https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=' + qrData + '&color=C9A84C&bgcolor=161619&margin=6';
+  return `
+  <div class="vcard">
+    <div class="vc-top">
+      <div class="vc-brand">📡 FLYBOX · ORANGE GN</div>
+      <div class="vc-dur">${v.plan}</div>
+    </div>
+    <div class="vc-code">${v.id}</div>
+    <div class="vc-qr"><img src="${qrURL}" width="90" height="90" alt="QR" loading="lazy"></div>
+    <div class="vc-info">
+      <div class="vc-item"><span>Durée</span><strong>${v.dur}${v.unit}</strong></div>
+      <div class="vc-item"><span>Débit</span><strong>${v.quota}</strong></div>
+      <div class="vc-item"><span>Validité</span><strong>${v.validity}j</strong></div>
+    </div>
+    <div class="vc-price">${fmt(v.price)} GNF</div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════
+//  CLIENT — CHECK CODE
+// ═══════════════════════════════════════════════
+async function checkCode() {
+  const raw = document.getElementById('codeInp').value.trim().toUpperCase().replace(/\s/g, '');
+  const panel = document.getElementById('resultPanel');
+  if (!raw) { toast('Entrez un code voucher', 'err'); return; }
+
+  // Récupérer le voucher (DB ou local)
+  let v = null;
+  if (sbClient) {
+    const {data, error} = await sbClient.from('vouchers').select('*').eq('id', raw).single();
+    if (!error && data) v = dbToLocal(data);
+  } else if (fbDb) {
+    try {
+      const doc = await fbDb.collection('vouchers').doc(raw).get();
+      if (doc.exists) v = fbDocToLocal(doc);
+    } catch(e) {}
+  }
+  if (!v) { checkExpired(); v = vouchers.find(x => x.id === raw); }
+
+  // ── Code invalide ──
+  if (!v) {
+    panel.innerHTML = `<div class="r-err"><div class="r-icon">❌</div>
+      <div class="r-title">Code invalide</div>
+      <div class="r-sub">Ce voucher n'existe pas. Vérifiez votre ticket.</div></div>`;
+    return;
+  }
+
+  // ── Déjà expiré ──
+  if (v.statut === 'Expiré') {
+    panel.innerHTML = `<div class="r-err"><div class="r-icon">🕐</div>
+      <div class="r-title">Voucher expiré</div>
+      <div class="r-sub">Ce ticket n'est plus valide. Achetez un nouveau voucher.</div></div>`;
+    showPortalExpired(); return;
+  }
+
+  // ── Déjà utilisé — reprendre session ──
+  if (v.statut === 'Utilisé') {
+    panel.innerHTML = '';
+    startPortalSession(v, false);
+    return;
+  }
+
+  // ── ACTIVATION ──
+  panel.innerHTML = `<div style="text-align:center;padding:12px;color:var(--dim);font-size:12px">
+    ⏳ Activation en cours…</div>`;
+
+  const now    = new Date();
+  const expiry = new Date(now.getTime() + v.validity * 24 * 60 * 60 * 1000);
+  v.statut    = 'Utilisé';
+  v.activated = now.toLocaleString('fr-FR');
+  v.expires   = expiry.toLocaleDateString('fr-FR');
+
+  // Détecter IP/MAC
+  const net = await detectClientNetwork();
+  if (net.ip)  v.clientIp  = net.ip;
+  if (net.mac) v.clientMac = net.mac;
+
+  // Ouvrir accès internet (whitelist MAC sur routeur)
+  await openInternetAccess(v);
+
+  // Sauvegarder
+  const idx = vouchers.findIndex(x => x.id === v.id);
+  if (idx >= 0) vouchers[idx] = v; else vouchers.unshift(v);
+  await saveUpdate(v);
+
+  panel.innerHTML = '';
+  startPortalSession(v, true);
+  if (isAdmin) updateMonitorBar();
+}
+
+
+// ═══════════════════════════════════════════════
+//  LIST
+// ═══════════════════════════════════════════════
+function renderList() {
+  selected.clear();
+  document.getElementById('chkAll').checked = false;
+  toggleSelBtns();
+
+  const q  = (document.getElementById('searchQ')?.value || '').toLowerCase();
+  const fs = document.getElementById('fStat')?.value || '';
+  const fp = document.getElementById('fPlan')?.value || '';
+
+  const data = vouchers.filter(v => {
+    const mq = !q || v.id.toLowerCase().includes(q) || v.plan.toLowerCase().includes(q);
+    const ms = !fs || v.statut === fs;
+    const mp = !fp || v.plan === fp;
+    return mq && ms && mp;
+  });
+
+  document.getElementById('listCount').textContent = data.length + ' voucher(s) sur ' + vouchers.length;
+
+  const tbody = document.getElementById('listBody');
+  if (!data.length) {
+    tbody.innerHTML = '<tr class="empty"><td colspan="9">Aucun voucher trouvé.</td></tr>'; return;
+  }
+
+  tbody.innerHTML = data.map(v => `
+    <tr>
+      <td><input type="checkbox" data-id="${v.id}" onchange="toggleSel('${v.id}',this.checked)"></td>
+      <td class="tc">${v.id}</td>
+      <td style="font-weight:600;font-size:12px">${v.plan}</td>
+      <td class="td">${v.dur}${v.unit}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gold)">${fmt(v.price)}</td>
+      <td><span class="${badgeCls(v.statut)}">${v.statut}</span></td>
+      <td class="tdt">${v.created}</td>
+      <td class="tdt">${v.activated || '—'}</td>
+      <td class="tdt">${v.expires || '—'}</td>
+      <td>
+        <div style="display:flex;gap:5px">
+          <button class="btn btn-ghost btn-xs" onclick="openDetail('${v.id}')" title="Voir">👁</button>
+          <button class="btn btn-info btn-xs"  onclick="openEdit('${v.id}')"   title="Éditer">✏️</button>
+          <button class="btn btn-danger btn-xs" onclick="delOne('${v.id}')"    title="Supprimer">🗑</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function toggleSel(id, on) { on ? selected.add(id) : selected.delete(id); toggleSelBtns(); }
+
+function toggleAll(on) {
+  document.querySelectorAll('#listBody input[type=checkbox]').forEach(cb => {
+    cb.checked = on;
+    on ? selected.add(cb.dataset.id) : selected.delete(cb.dataset.id);
+  });
+  toggleSelBtns();
+}
+
+function toggleSelBtns() {
+  const show = selected.size > 0;
+  document.getElementById('btnDelSel').style.display   = show ? 'flex' : 'none';
+  document.getElementById('btnPrintSel').style.display = show ? 'flex' : 'none';
+}
+
+async function deleteSelected() {
+  if (!selected.size) return;
+  if (!confirm('Supprimer ' + selected.size + ' voucher(s) ?')) return;
+  const ids = [...selected];
+  vouchers = vouchers.filter(v => !selected.has(v.id));
+  await deleteFromDB(ids);
+  renderList(); toast('🗑 ' + ids.length + ' supprimé(s)', '');
+}
+
+async function delOne(id) {
+  if (!confirm('Supprimer ce voucher ?')) return;
+  vouchers = vouchers.filter(v => v.id !== id);
+  await deleteFromDB([id]);
+  renderList(); toast('🗑 Supprimé', '');
+}
+
+function printSelected() {
+  const sel = vouchers.filter(v => selected.has(v.id));
+  const baseURL = window.location.href.split('?')[0];
+  showView('gen');
+  document.getElementById('previewTitle').textContent = sel.length + ' voucher(s) sélectionné(s)';
+  document.getElementById('voucherPreview').innerHTML = sel.map(v => vcardHTML(v, baseURL)).join('');
+  document.getElementById('previewWrap').style.display = 'block';
+  setTimeout(() => window.print(), 600);
+}
+
+// ═══════════════════════════════════════════════
+//  DETAIL MODAL
+// ═══════════════════════════════════════════════
+function openDetail(id) {
+  const v = vouchers.find(x => x.id === id); if (!v) return;
+  const baseURL = window.location.href.split('?')[0];
+  const qrData  = encodeURIComponent(baseURL + '?code=' + v.id);
+  const qrURL   = 'https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=' + qrData + '&color=C9A84C&bgcolor=0F0F13&margin=6';
+
+  document.getElementById('moDetailBody').innerHTML = `
+    <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:16px">
+      <img src="${qrURL}" width="110" height="110" style="border-radius:9px;border:1px solid var(--goldb);flex-shrink:0" alt="QR">
+      <div style="flex:1">
+        ${df('Code', '<span style="font-family:\'DM Mono\',monospace;color:var(--gold);font-size:14px;letter-spacing:.08em">' + v.id + '</span>')}
+        ${df('Forfait', v.plan + ' — ' + v.dur + v.unit)}
+        ${df('Prix', fmt(v.price) + ' GNF')}
+        ${df('Statut', '<span class="' + badgeCls(v.statut) + '">' + v.statut + '</span>')}
+      </div>
+    </div>
+    <div style="display:grid;gap:0">
+      ${df('Créé le', v.created)}
+      ${df('Activé le', v.activated || 'Pas encore')}
+      ${df('Expire le', v.expires || '—')}
+      ${df('Validité stock', v.validity + ' jours')}
+      ${v.clientIp  ? df('IP client',  '<span style="font-family:\'DM Mono\',monospace;color:var(--info)">' + v.clientIp  + '</span>') : ''}
+      ${v.clientMac ? df('MAC client', '<span style="font-family:\'DM Mono\',monospace;color:var(--info)">' + v.clientMac + '</span>') : ''}
+      ${v.blocked   ? df('Bloqué le', '<span style="color:var(--err)">' + (v.blockedAt || '✓') + '</span>') : ''}
+    </div>
+    ${v.statut === 'Disponible' ? `<div style="margin-top:16px"><button class="btn btn-ok btn-full" onclick="markUsed('${v.id}')">✅ Marquer comme utilisé manuellement</button></div>` : ''}
+    ${(!v.clientIp && !v.clientMac) ? `<div style="margin-top:12px;padding:10px 12px;background:var(--orngd);border:1px solid var(--orngb);border-radius:8px;font-size:11px;color:var(--orng)">
+      ⚠️ IP/MAC non capturés — le client n'a pas activé son ticket depuis ce réseau Flybox.
+    </div>` : ''}
+  `;
+  document.getElementById('moDelBtn').onclick = () => { closeMo('moDetail'); delOne(id); };
+
+  // Boutons block / unblock
+  const blockBtn   = document.getElementById('moBlockBtn');
+  const unblockBtn = document.getElementById('moUnblockBtn');
+  if (v.clientMac || v.clientIp) {
+    if (v.blocked) {
+      blockBtn.style.display   = 'none';
+      unblockBtn.style.display = 'flex';
+      unblockBtn.onclick = () => { unblockClient(v); closeMo('moDetail'); };
+    } else {
+      blockBtn.style.display   = 'flex';
+      unblockBtn.style.display = 'none';
+      blockBtn.onclick = () => { blockClient(v); closeMo('moDetail'); };
+    }
+  } else {
+    blockBtn.style.display   = 'none';
+    unblockBtn.style.display = 'none';
+  }
+  openMo('moDetail');
+}
+
+function df(label, val) {
+  return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+    <span style="font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em">${label}</span>
+    <span style="font-size:12.5px">${val}</span></div>`;
+}
+
+async function markUsed(id) {
+  const v = vouchers.find(x => x.id === id); if (!v) return;
+  const now = new Date();
+  const exp = new Date(now.getTime() + v.validity * 24 * 60 * 60 * 1000);
+  v.statut    = 'Utilisé';
+  v.activated = now.toLocaleString('fr-FR');
+  v.expires   = exp.toLocaleDateString('fr-FR');
+  await saveUpdate(v);
+  closeMo('moDetail'); renderList(); toast('✅ Statut mis à jour', 'ok');
+}
+
+// ═══════════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════════
+function renderDash() {
+  const total = vouchers.length;
+  const dispo = vouchers.filter(v => v.statut === 'Disponible').length;
+  const used  = vouchers.filter(v => v.statut === 'Utilisé').length;
+  const exp   = vouchers.filter(v => v.statut === 'Expiré').length;
+  const rev   = vouchers.filter(v => v.statut === 'Disponible').reduce((s, v) => s + (v.price || 0), 0);
+
+  document.getElementById('statsBox').innerHTML = `
+    <div class="scard"><div class="sv c-all">${total}</div><div class="sl">Total</div></div>
+    <div class="scard"><div class="sv c-ok">${dispo}</div><div class="sl">Disponibles</div></div>
+    <div class="scard"><div class="sv c-use">${used}</div><div class="sl">Utilisés</div></div>
+    <div class="scard"><div class="sv c-exp">${exp}</div><div class="sl">Expirés</div></div>
+    <div class="scard"><div class="sv c-rev" style="font-size:17px">${fmt(rev)}</div><div class="sl">Stock GNF</div></div>`;
+
+  // Par forfait
+  const byPlan = {};
+  PLANS.forEach(p => { byPlan[p.label] = {total:0, dispo:0, color:p.color}; });
+  vouchers.forEach(v => { if (byPlan[v.plan]) { byPlan[v.plan].total++; if (v.statut === 'Disponible') byPlan[v.plan].dispo++; } });
+  const ents = Object.entries(byPlan).filter(([,d]) => d.total > 0);
+  const maxT = Math.max(...ents.map(([,d]) => d.total), 1);
+
+  document.getElementById('planChart').innerHTML = ents.length
+    ? ents.map(([name, d]) => `
+      <div class="bar-row">
+        <div class="bar-labels"><span style="color:var(--dim)">${name}</span><span>${d.dispo}/${d.total}</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${(d.total/maxT)*100}%;background:${d.color}"></div></div>
+      </div>`).join('')
+    : '<div style="color:var(--mut);font-size:13px;text-align:center;padding:20px">Aucun voucher</div>';
+
+  // Revenus
+  const revByP = {};
+  PLANS.forEach(p => { revByP[p.label] = {rev:0, color:p.color}; });
+  vouchers.filter(v => v.statut === 'Disponible').forEach(v => { if (revByP[v.plan]) revByP[v.plan].rev += v.price; });
+  const revE = Object.entries(revByP).filter(([,d]) => d.rev > 0);
+  const maxR = Math.max(...revE.map(([,d]) => d.rev), 1);
+
+  document.getElementById('revChart').innerHTML = revE.length
+    ? revE.map(([name, d]) => `
+      <div class="bar-row">
+        <div class="bar-labels"><span style="color:var(--dim)">${name}</span><span style="color:var(--gold)">${fmt(d.rev)} GNF</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${(d.rev/maxR)*100}%;background:${d.color}"></div></div>
+      </div>`).join('')
+    : '<div style="color:var(--mut);font-size:13px;text-align:center;padding:20px">Aucun stock disponible</div>';
+}
+
+// ═══════════════════════════════════════════════
+//  EXPORT
+// ═══════════════════════════════════════════════
+function exportCSV() {
+  const h = ['Code','Forfait','Durée','Prix GNF','Statut','Créé','Activé','Expire','Validité(j)'];
+  const rows = vouchers.map(v => [v.id, v.plan, v.dur+v.unit, v.price, v.statut, v.created, v.activated||'', v.expires||'', v.validity]);
+  const csv  = [h, ...rows].map(r => r.map(c => '"'+c+'"').join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a'); a.href = url;
+  a.download = 'flybox-vouchers-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click(); URL.revokeObjectURL(url);
+  toast('✅ CSV exporté', 'ok');
+}
+
+// ═══════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════
+function fmt(n) { return Number(n||0).toLocaleString('fr-GN'); }
+
+function badgeCls(s) {
+  return 'badge ' + ({Disponible:'b-dispo',Utilisé:'b-use',Expiré:'b-exp'}[s] || 'b-dispo');
+}
+
+function checkExpired() {
+  const today = new Date(); let changed = false;
+  vouchers.forEach(v => {
+    if (v.statut === 'Disponible' && v.expires) {
+      const parts = v.expires.split('/');
+      if (parts.length === 3) {
+        const d = new Date(parts[2]+'-'+parts[1]+'-'+parts[0]);
+        if (d < today) { v.statut = 'Expiré'; changed = true; }
+      }
+    }
+  });
+  if (changed) save();
+}
+
+function openMo(id)  { document.getElementById(id).classList.add('open'); }
+function closeMo(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.mo').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); }));
+
+function toast(msg, type) {
+  const c  = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = 't-msg' + (type ? ' '+type : '');
+  el.textContent = msg; c.appendChild(el);
+  setTimeout(() => { el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(() => el.remove(), 300); }, 3000);
+}
+
+// ═══════════════════════════════════════════════
+//  CRUD — CRÉER / ÉDITER
+// ═══════════════════════════════════════════════
+let crudMode = 'create'; // 'create' | 'edit'
+let crudEditId = null;
+
+function openCreate() {
+  crudMode   = 'create';
+  crudEditId = null;
+  document.getElementById('crudTitle').textContent   = '➕ Nouveau Voucher';
+  document.getElementById('crudSaveBtn').textContent = '💾 Créer le voucher';
+  document.getElementById('crudCode').value          = '';
+  document.getElementById('crudCode').readOnly       = false;
+  document.getElementById('crudCodeHint').textContent = 'Laissez vide pour générer automatiquement';
+  document.getElementById('crudAutoBtn').style.display = 'flex';
+  document.getElementById('crudPlan').value          = '24h';
+  crudPlanChange();
+  document.getElementById('crudValidity').value      = '30';
+  document.getElementById('crudStatut').value        = 'Disponible';
+  crudStatutChange();
+  document.getElementById('crudErr').style.display   = 'none';
+  openMo('moCRUD');
+}
+
+function openEdit(id) {
+  const v = vouchers.find(x => x.id === id); if (!v) return;
+  crudMode   = 'edit';
+  crudEditId = id;
+  document.getElementById('crudTitle').textContent   = '✏️ Modifier le Voucher';
+  document.getElementById('crudSaveBtn').textContent = '💾 Sauvegarder';
+
+  // Code — lecture seule en édition
+  document.getElementById('crudCode').value          = v.id;
+  document.getElementById('crudCode').readOnly       = true;
+  document.getElementById('crudCodeHint').textContent = 'Le code ne peut pas être modifié';
+  document.getElementById('crudAutoBtn').style.display = 'none';
+
+  // Forfait
+  const knownPlan = PLANS.find(p => p.label === v.plan);
+  if (knownPlan) {
+    document.getElementById('crudPlan').value = knownPlan.id;
+    document.getElementById('crudCustom').style.display = 'none';
+  } else {
+    document.getElementById('crudPlan').value = 'custom';
+    document.getElementById('crudCustom').style.display = 'block';
+    document.getElementById('crudDur').value   = v.dur;
+    document.getElementById('crudUnit').value  = v.unit;
+    document.getElementById('crudQuota').value = v.quota || 'Illimité';
+  }
+
+  document.getElementById('crudPrice').value         = v.price;
+  document.getElementById('crudValidity').value      = v.validity;
+  document.getElementById('crudStatut').value        = v.statut;
+  document.getElementById('crudActivated').value     = v.activated || '';
+  document.getElementById('crudExpires').value       = v.expires || '';
+  crudStatutChange();
+  document.getElementById('crudErr').style.display   = 'none';
+  openMo('moCRUD');
+}
+
+function crudPlanChange() {
+  const pid  = document.getElementById('crudPlan').value;
+  const plan = PLANS.find(p => p.id === pid);
+  document.getElementById('crudCustom').style.display = pid === 'custom' ? 'block' : 'none';
+  if (plan) {
+    document.getElementById('crudPrice').value = plan.price;
+    document.getElementById('crudDur').value   = plan.dur;
+    document.getElementById('crudUnit').value  = plan.unit;
+    document.getElementById('crudQuota').value = plan.quota;
+  }
+}
+
+function crudStatutChange() {
+  const s = document.getElementById('crudStatut').value;
+  document.getElementById('crudDates').style.display = s === 'Utilisé' ? 'block' : 'none';
+  if (s === 'Utilisé' && !document.getElementById('crudActivated').value) {
+    document.getElementById('crudActivated').value = new Date().toLocaleString('fr-FR');
+    const exp = new Date(Date.now() + parseInt(document.getElementById('crudValidity').value || 30) * 86400000);
+    document.getElementById('crudExpires').value = exp.toLocaleDateString('fr-FR');
+  }
+}
+
+function crudAutoCode() {
+  const prefix = 'FBX';
+  document.getElementById('crudCode').value = genCode(prefix);
+}
+
+async function saveCRUD() {
+  const errEl = document.getElementById('crudErr');
+  errEl.style.display = 'none';
+
+  const pid      = document.getElementById('crudPlan').value;
+  const price    = parseInt(document.getElementById('crudPrice').value) || 0;
+  const validity = parseInt(document.getElementById('crudValidity').value) || 30;
+  const statut   = document.getElementById('crudStatut').value;
+  const activated = statut === 'Utilisé' ? document.getElementById('crudActivated').value.trim() : null;
+  const expires  = statut === 'Utilisé' ? document.getElementById('crudExpires').value.trim() : null;
+
+  // Résoudre plan
+  let plan, dur, unit, quota, planId;
+  if (pid === 'custom') {
+    dur    = parseInt(document.getElementById('crudDur').value) || 1;
+    unit   = document.getElementById('crudUnit').value;
+    quota  = document.getElementById('crudQuota').value.trim() || 'Illimité';
+    plan   = dur + unit;
+    planId = 'custom';
+  } else {
+    const p = PLANS.find(x => x.id === pid);
+    if (!p) { errEl.textContent = 'Sélectionnez un forfait.'; errEl.style.display='block'; return; }
+    plan = p.label; dur = p.dur; unit = p.unit; quota = p.quota; planId = p.id;
+  }
+
+  // ── CREATE ──
+  if (crudMode === 'create') {
+    let code = document.getElementById('crudCode').value.trim().toUpperCase();
+    if (!code) code = genCode('FBX');
+    // Vérifier unicité
+    if (vouchers.find(v => v.id === code)) {
+      errEl.textContent = 'Ce code existe déjà. Choisissez-en un autre.'; errEl.style.display='block'; return;
+    }
+    const v = {
+      id: code, plan, planId, dur, unit, quota, price, statut,
+      created:   new Date().toLocaleDateString('fr-FR'),
+      activated: activated || null,
+      expires:   expires   || null,
+      validity
+    };
+    vouchers.unshift(v);
+    saveLocal();
+    await saveNew([v]);
+    closeMo('moCRUD');
+    renderList();
+    toast('✅ Voucher créé : ' + code, 'ok');
+  }
+
+  // ── EDIT ──
+  else {
+    const idx = vouchers.findIndex(x => x.id === crudEditId);
+    if (idx < 0) { errEl.textContent = 'Voucher introuvable.'; errEl.style.display='block'; return; }
+    const v = vouchers[idx];
+    v.plan      = plan;
+    v.planId    = planId;
+    v.dur       = dur;
+    v.unit      = unit;
+    v.quota     = quota;
+    v.price     = price;
+    v.validity  = validity;
+    v.statut    = statut;
+    v.activated = activated || null;
+    v.expires   = expires   || null;
+    await saveUpdate(v);
+    closeMo('moCRUD');
+    renderList();
+    toast('✅ Voucher mis à jour', 'ok');
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  RESET
+// ═══════════════════════════════════════════════
+async function resetExpired() {
+  const count = vouchers.filter(v => v.statut === 'Expiré').length;
+  if (!count) { toast('Aucun voucher expiré à supprimer', ''); return; }
+  if (!confirm('Supprimer ' + count + ' voucher(s) expiré(s) ?')) return;
+  const ids = vouchers.filter(v => v.statut === 'Expiré').map(v => v.id);
+  vouchers   = vouchers.filter(v => v.statut !== 'Expiré');
+  await deleteFromDB(ids);
+  renderDash();
+  toast('🗑 ' + count + ' expiré(s) supprimé(s)', 'ok');
+}
+
+async function resetAll() {
+  if (!confirm('⚠️ ATTENTION\n\nCette action supprimera TOUS les vouchers de façon permanente.\n\nConfirmer ?')) return;
+  if (!confirm('Dernière confirmation — supprimer tous les vouchers ?')) return;
+  const ids = vouchers.map(v => v.id);
+  vouchers   = [];
+  saveLocal();
+  if (sbClient && ids.length) {
+    const {error} = await sbClient.from('vouchers').delete().in('id', ids);
+    if (error) toast('⚠️ Supabase : ' + error.message, 'err');
+  }
+  if (fbDb && ids.length) {
+    try { await fbDeleteDocs(ids); } catch(e) { toast('⚠️ Firebase : ' + e.message, 'err'); }
+  }
+  renderDash();
+  toast('✅ Tous les vouchers ont été supprimés', 'ok');
+}
+
+function resetFactory() {
+  if (!confirm('⚠️ REMISE D\'USINE\n\nCela supprimera :\n• Tous les vouchers\n• La configuration Supabase\n• La configuration Firebase\n• Les identifiants personnalisés\n\nConfirmer ?')) return;
+  if (!confirm('Dernière confirmation — remise d\'usine complète ?')) return;
+  vouchers = [];
+  localStorage.removeItem('fbx_v3');
+  localStorage.removeItem('fbx_supa');
+  localStorage.removeItem('fbx_fire');
+  localStorage.removeItem('fbx_creds');
+  CREDS    = {u:'admin', p:'flybox2025'};
+  sbClient = null;
+  if (sbChannel) { sbChannel.unsubscribe(); sbChannel = null; }
+  if (fbUnsub)   { fbUnsub(); fbUnsub = null; }
+  fbDb = null; fbApp = null;
+  updateSyncDot('off', 'Non configuré');
+  document.getElementById('supUrl').value      = '';
+  document.getElementById('supKey').value      = '';
+  document.getElementById('fireApiKey').value  = '';
+  document.getElementById('fireProjectId').value = '';
+  document.getElementById('fireAuthDomain').value = '';
+  document.getElementById('fireAppId').value   = '';
+  updateSupUI();
+  updateFirebaseUI();
+  showView('client');
+  toast('✅ Application réinitialisée', 'ok');
+}
+
+// ═══════════════════════════════════════════════
+//  COUNTDOWN — SESSION ACTIVE CLIENT
+// ═══════════════════════════════════════════════
+let cdownTimer   = null;   // setInterval pour le countdown affiché
+let cdownCode    = null;   // code du ticket en cours de countdown
+let monitorTimer = null;   // setInterval surveillance global (30s)
+let alertedCodes = new Set(); // codes déjà alertés pour ne pas répéter
+
+// Démarrer le countdown après activation d'un ticket
+function startCountdown(v) {
+  // Redirigé vers le portail captif
+  startPortalSession(v, false);
+}
+
+
+// Calcul durée totale en secondes selon unité du forfait
+function calcTotalSeconds(v) {
+  const dur  = parseInt(v.dur) || 0;
+  const unit = v.unit || 'h';
+  if (unit === 'min') return dur * 60;
+  if (unit === 'h')   return dur * 3600;
+  if (unit === 'j')   return dur * 86400;
+  return dur * 3600; // fallback
+}
+
+// Parser une date fr-FR "jj/mm/aaaa hh:mm:ss" → Date
+function parsefrFR(str) {
+  if (!str) return null;
+  // "12/05/2026 14:30:00" ou "12/05/2026 14:30"
+  const m = str.match(/(\d{2})\/(\d{2})\/(\d{4})[, ]+(\d{2}):(\d{2})(?::(\d{2}))?/);
+  if (!m) return null;
+  return new Date(+m[3], +m[2]-1, +m[1], +m[4], +m[5], +(m[6]||0));
+}
+
+// Appelé à l'expiration d'un ticket
+function onTicketExpired(v) {
+  if (alertedCodes.has(v.id)) return;
+  alertedCodes.add(v.id);
+  const idx = vouchers.findIndex(x => x.id === v.id);
+  if (idx >= 0 && vouchers[idx].statut === 'Utilisé') {
+    vouchers[idx].statut = 'Expiré';
+    saveUpdate(vouchers[idx]);
+  }
+  if (isAdmin) { toast('⛔ TICKET EXPIRÉ : ' + v.id + ' — coupure en cours…', 'err'); beepAlert(); }
+  pushNotif('⛔ Session expirée — ' + v.plan, 'Code : ' + v.id + '\nCoupure WiFi automatique.', 'expire');
+  tryFlyboxCut(v.id);
+  blockClient(v);
+  updateMonitorBar();
+}
+
+// Warning 5 min avant expiration
+const warnedCodes = new Set();
+function onTicketWarning(v) {
+  if (warnedCodes.has(v.id)) return;
+  warnedCodes.add(v.id);
+  if (isAdmin) toast('⚠️ ' + v.id.slice(-8) + ' — moins de 5 min restantes', 'info');
+  pushNotif('⚠️ Session bientôt expirée — ' + v.plan, 'Code : ' + v.id + '\nMoins de 5 minutes.', 'warn');
+}
+
+// ─── Push notifications navigateur ───
+function requestNotifPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') {
+    Notification.requestPermission().then(p => {
+      if (p === 'granted') toast('🔔 Notifications push activées', 'ok');
+    });
+  }
+}
+
+function pushNotif(title, body, type) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  try {
+    const n = new Notification(title, { body, tag: 'flybox-' + type, requireInteraction: type === 'expire' });
+    n.onclick = () => { window.focus(); n.close(); };
+    if (type !== 'expire') setTimeout(() => n.close(), 8000);
+  } catch(e) {}
+}
+
+// ─── Beep natif via Web Audio ───
+function beepAlert() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 200, 400].forEach(delay => {
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.3, ctx.currentTime + delay/1000);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay/1000 + 0.18);
+      osc.start(ctx.currentTime + delay/1000);
+      osc.stop(ctx.currentTime + delay/1000 + 0.2);
+    });
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════
+//  PORTAIL CAPTIF — session, whitelist, blacklist
+// ═══════════════════════════════════════════════
+
+let portalTimer = null;
+let portalIpDetected = null;
+
+// Détecter IP au chargement de la page client
+async function initPortal() {
+  // SSID depuis hotspot config
+  const hsCfg = JSON.parse(localStorage.getItem('fbx_hotspot') || 'null');
+  const ssid  = (hsCfg && hsCfg.hsSsid) || HS_DEVICE_DEFAULTS.hsSsid;
+  const ssidEl = document.getElementById('portalSsid');
+  if (ssidEl) ssidEl.textContent = ssid;
+
+  // Détecter IP locale
+  try {
+    portalIpDetected = await getLocalIPviaWebRTC();
+    const ipEl = document.getElementById('portalIp');
+    if (ipEl) ipEl.textContent = portalIpDetected ? '🌐 IP : ' + portalIpDetected : 'IP non détectée';
+  } catch(e) {
+    const ipEl = document.getElementById('portalIp');
+    if (ipEl) ipEl.textContent = 'Connecté au réseau Flybox';
+  }
+}
+
+// Ouvrir internet — whitelist MAC sur routeur
+async function openInternetAccess(v) {
+  const saved = JSON.parse(localStorage.getItem('fbx_admin') || '{}');
+  const base  = (saved.url || 'http://192.168.1.1').replace(/\/$/, '');
+  const b64   = btoa((saved.user || 'admin') + ':' + (saved.pass || 'dYg75v3k'));
+  const mac   = v.clientMac;
+
+  if (!mac) return; // Sans MAC, on ne peut pas whitelister
+
+  // Ajouter MAC à la whitelist (mode 1 = whitelist)
+  await sendRouterXML(base, b64,
+    '/api/wlan/multi-macfilter-settings',
+    `<?xml version="1.0" encoding="UTF-8"?><request>
+      <Ssids>
+        <Ssid>
+          <wifihostname>CLIENT_${v.id.slice(-6)}</wifihostname>
+          <wifimac>${mac}</wifimac>
+        </Ssid>
+      </Ssids>
+      <wifimacfiltermode>1</wifimacfiltermode>
+      <wifimacfilterswitch>0</wifimacfilterswitch>
+    </request>`
+  );
+}
+
+// Afficher la session active (grand countdown portail)
+function startPortalSession(v, isNew) {
+  // Masquer la carte de saisie, afficher la session
+  const codeCard   = document.getElementById('portalCodeCard');
+  const sessPanel  = document.getElementById('sessionPanel');
+  const statusBar  = document.getElementById('portalStatus');
+  const statusDot  = document.getElementById('portalStatusDot');
+  const statusMsg  = document.getElementById('portalStatusMsg');
+
+  if (codeCard)  codeCard.style.display  = 'none';
+  if (statusBar) { statusBar.className = 'status-bar connected'; }
+  if (statusDot) statusDot.className = 'status-dot on';
+  if (statusMsg) statusMsg.textContent = '✅ Internet actif — ' + v.plan;
+
+  if (isNew) toast('✅ Internet activé ! Bon surf.', 'ok');
+
+  if (portalTimer) clearInterval(portalTimer);
+
+  function tick() {
+    const totalSec  = calcTotalSeconds(v);
+    const activated = parsefrFR(v.activated);
+    if (!activated) return;
+    const elapsed   = Math.floor((Date.now() - activated) / 1000);
+    const remaining = Math.max(0, totalSec - elapsed);
+    const pct       = totalSec > 0 ? (remaining / totalSec) * 100 : 0;
+
+    const hh  = String(Math.floor(remaining / 3600)).padStart(2, '0');
+    const mm  = String(Math.floor((remaining % 3600) / 60)).padStart(2, '0');
+    const ss  = String(remaining % 60).padStart(2, '0');
+
+    const expired = remaining === 0;
+    const warn    = remaining < 300 && !expired;
+    const cls     = expired ? 'dead' : warn ? 'warn' : 'ok';
+    const barClr  = expired ? '#E74C3C' : warn ? 'var(--orng)' : '#27AE60';
+
+    if (sessPanel) sessPanel.innerHTML = `
+      <div class="${expired ? 'session-expired' : warn ? 'session-warn' : 'session-active'}">
+        <div style="text-align:center;margin-bottom:6px">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+            color:${expired ? 'var(--err)' : warn ? 'var(--orng)' : 'var(--ok)'}">
+            ${expired ? '⛔ Session terminée' : warn ? '⚠️ Bientôt expiré' : '● Internet actif'}
+          </div>
+        </div>
+        <div class="big-cdown ${cls}">${expired ? '00:00:00' : hh+':'+mm+':'+ss}</div>
+        <div class="cdown-label">${expired ? 'Votre connexion a été coupée' : 'Temps restant sur votre forfait'}</div>
+        <div class="prog-track">
+          <div class="prog-fill" style="width:${pct}%;background:${barClr}"></div>
+        </div>
+        <div class="sess-grid">
+          <div class="sess-item"><span>Forfait</span><strong>${v.plan}</strong></div>
+          <div class="sess-item"><span>IP</span><strong style="font-family:'DM Mono',monospace;font-size:10px">${v.clientIp || '—'}</strong></div>
+          <div class="sess-item"><span>Expire</span><strong style="font-size:10px">${v.expires || '—'}</strong></div>
+        </div>
+        ${expired ? `
+        <div style="text-align:center;font-size:12.5px;color:var(--err);margin-bottom:14px;font-weight:600">
+          Votre forfait est épuisé. Achetez un nouveau ticket pour reprendre internet.
+        </div>
+        <button class="btn btn-orange btn-full" onclick="showPortalInput()" style="font-size:13px;padding:13px">
+          🎟️ Acheter un nouveau voucher
+        </button>` : `
+        <button class="btn btn-ghost btn-sm btn-full" onclick="document.getElementById('codeInp').value='';
+          document.getElementById('portalCodeCard').style.display='block';
+          document.getElementById('sessionPanel').style.display='none'">
+          Masquer
+        </button>`}
+      </div>`;
+    sessPanel.style.display = 'block';
+
+    // Expiration
+    if (expired) {
+      clearInterval(portalTimer);
+      onTicketExpired(v);
+      showPortalExpired();
+    }
+    // Warning 5 min
+    if (warn) onTicketWarning(v);
+  }
+
+  tick();
+  portalTimer = setInterval(tick, 1000);
+}
+
+function showPortalExpired() {
+  const statusBar = document.getElementById('portalStatus');
+  const statusDot = document.getElementById('portalStatusDot');
+  const statusMsg = document.getElementById('portalStatusMsg');
+  if (statusBar) statusBar.className = 'status-bar disconnected';
+  if (statusDot) statusDot.className = 'status-dot off';
+  if (statusMsg) statusMsg.textContent = '⛔ Internet coupé — session expirée';
+}
+
+function showPortalInput() {
+  document.getElementById('portalCodeCard').style.display = 'block';
+  document.getElementById('sessionPanel').style.display   = 'none';
+  document.getElementById('codeInp').value = '';
+  document.getElementById('resultPanel').innerHTML = '';
+  const statusBar = document.getElementById('portalStatus');
+  const statusDot = document.getElementById('portalStatusDot');
+  const statusMsg = document.getElementById('portalStatusMsg');
+  if (statusBar) statusBar.className = 'status-bar disconnected';
+  if (statusDot) statusDot.className = 'status-dot off';
+  if (statusMsg) statusMsg.textContent = 'Internet non activé — entrez votre code';
+}
+// ═══════════════════════════════════════════════
+
+async function detectClientNetwork() {
+  const result = { ip: null, mac: null };
+
+  // ── 1. IP locale via WebRTC ──
+  try {
+    result.ip = await getLocalIPviaWebRTC();
+  } catch(e) {}
+
+  // ── 2. MAC via API routeur (no-cors → lecture impossible, on utilise le host-list) ──
+  if (result.ip) {
+    result.mac = await getMacFromRouter(result.ip);
+  }
+
+  return result;
+}
+
+async function getLocalIPviaWebRTC() {
+  return new Promise((resolve, reject) => {
+    const pc = new RTCPeerConnection({ iceServers: [] });
+    pc.createDataChannel('');
+    pc.createOffer()
+      .then(o => pc.setLocalDescription(o))
+      .catch(reject);
+    pc.onicecandidate = e => {
+      if (!e || !e.candidate) return;
+      const m = /(\d{1,3}(?:\.\d{1,3}){3})/.exec(e.candidate.candidate);
+      if (m && !m[1].startsWith('127.')) {
+        resolve(m[1]);
+        pc.close();
+      }
+    };
+    setTimeout(() => { pc.close(); reject(new Error('timeout')); }, 2500);
+  });
+}
+
+// Tente de lire la host-list du routeur avec mode cors (peut marcher en réseau local)
+async function getMacFromRouter(clientIp) {
+  const saved = JSON.parse(localStorage.getItem('fbx_admin') || '{}');
+  const base  = (saved.url || 'http://192.168.1.1').replace(/\/$/, '');
+  const user  = saved.user || 'admin';
+  const pass  = saved.pass || 'dYg75v3k';
+
+  try {
+    const res = await Promise.race([
+      fetch(base + '/api/wlan/host-list', {
+        headers: { 'Authorization': 'Basic ' + btoa(user + ':' + pass) }
+        // pas de no-cors ici — on a besoin de lire la réponse
+      }),
+      new Promise((_, r) => setTimeout(() => r(new Error('to')), 2000))
+    ]);
+    if (!res.ok) return null;
+    const xml  = await res.text();
+    // Chercher l'entrée correspondant à l'IP du client
+    const mac  = parseMacFromHostList(xml, clientIp);
+    return mac;
+  } catch(e) {
+    return null; // CORS bloqué — MAC non disponible
+  }
+}
+
+function parseMacFromHostList(xml, targetIp) {
+  // Format Huawei HiLink : <AssocDevice><MacAddress>XX:XX</MacAddress><IpAddress>...</IpAddress>
+  const parser  = new DOMParser();
+  const doc     = parser.parseFromString(xml, 'text/xml');
+  const devices = doc.querySelectorAll('AssocDevice');
+  for (const dev of devices) {
+    const ip  = dev.querySelector('IpAddress')?.textContent?.trim();
+    const mac = dev.querySelector('MacAddress')?.textContent?.trim();
+    if (ip === targetIp && mac) return mac;
+  }
+  return null;
+}
+
+// ═══════════════════════════════════════════════
+//  BLOCAGE RÉSEAU — MAC blacklist + kick + IP ban
+// ═══════════════════════════════════════════════
+
+async function blockClient(v) {
+  const saved = JSON.parse(localStorage.getItem('fbx_admin') || '{}');
+  const base  = (saved.url || 'http://192.168.1.1').replace(/\/$/, '');
+  const user  = saved.user || 'admin';
+  const pass  = saved.pass || 'dYg75v3k';
+  const b64   = btoa(user + ':' + pass);
+  const mac   = v.clientMac;
+  const ip    = v.clientIp;
+
+  if (!mac && !ip) {
+    toast('⚠️ IP/MAC non détectés pour ' + v.id.slice(-8) + ' — coupure WiFi globale', 'err');
+    return false;
+  }
+
+  const label = mac || ip;
+  toast('🔒 Blocage réseau : ' + label + '…', 'info');
+
+  const actions = [];
+
+  if (mac) {
+    // ── A. Kick station immédiat par MAC ──
+    actions.push(sendRouterXML(base, b64,
+      '/api/wlan/kick-station',
+      `<?xml version="1.0" encoding="UTF-8"?><request><StaMac>${mac}</StaMac></request>`
+    ));
+
+    // ── B. Ajouter MAC à la blacklist (MAC filter mode 2 = blacklist) ──
+    actions.push(sendRouterXML(base, b64,
+      '/api/wlan/multi-macfilter-settings',
+      `<?xml version="1.0" encoding="UTF-8"?><request>
+        <Ssids>
+          <Ssid>
+            <wifihostname>BLOCKED_${v.id.slice(-6)}</wifihostname>
+            <wifimac>${mac}</wifimac>
+          </Ssid>
+        </Ssids>
+        <wifimacfiltermode>2</wifimacfiltermode>
+        <wifimacfilterswitch>1</wifimacfilterswitch>
+      </request>`
+    ));
+
+    // ── C. MAC filter classique (fallback) ──
+    actions.push(sendRouterXML(base, b64,
+      '/api/wlan/mac-filter',
+      `<?xml version="1.0" encoding="UTF-8"?><request>
+        <MacAddress>${mac}</MacAddress>
+        <ID>BLOCKED_${v.id.slice(-6)}</ID>
+      </request>`
+    ));
+  }
+
+  if (ip) {
+    // ── D. Supprimer le bail DHCP de l'IP ──
+    actions.push(sendRouterXML(base, b64,
+      '/api/dhcp/static-addr-list',
+      `<?xml version="1.0" encoding="UTF-8"?><request>
+        <DhcpStaticAddrList>
+          <DhcpStaticAddr>
+            <Ip>${ip}</Ip>
+            <lan>BLOCKED</lan>
+          </DhcpStaticAddr>
+        </DhcpStaticAddrList>
+      </request>`
+    ));
+
+    // ── E. Formulaire de blocage IP (fallback) ──
+    actions.push(sendRouterForm(base, b64,
+      '/goform/blockClient',
+      `blockIp=${encodeURIComponent(ip)}&action=block`
+    ));
+  }
+
+  await Promise.allSettled(actions);
+
+  // Marquer dans le voucher
+  const idx = vouchers.findIndex(x => x.id === v.id);
+  if (idx >= 0) {
+    vouchers[idx].blocked   = true;
+    vouchers[idx].blockedAt = new Date().toLocaleString('fr-FR');
+    saveLocal();
+  }
+
+  toast(`🔒 ${mac ? 'MAC' : 'IP'} ${label} bloqué — reconnexion impossible`, 'ok');
+  return true;
+}
+
+async function unblockClient(v) {
+  const saved = JSON.parse(localStorage.getItem('fbx_admin') || '{}');
+  const base  = (saved.url || 'http://192.168.1.1').replace(/\/$/, '');
+  const user  = saved.user || 'admin';
+  const pass  = saved.pass || 'dYg75v3k';
+  const b64   = btoa(user + ':' + pass);
+  const mac   = v.clientMac;
+
+  if (!mac) { toast('Aucun MAC enregistré pour ce ticket', 'err'); return; }
+
+  // Retirer de la blacklist
+  await sendRouterXML(base, b64,
+    '/api/wlan/multi-macfilter-settings',
+    `<?xml version="1.0" encoding="UTF-8"?><request>
+      <Ssids></Ssids>
+      <wifimacfiltermode>0</wifimacfiltermode>
+      <wifimacfilterswitch>0</wifimacfilterswitch>
+    </request>`
+  );
+
+  const idx = vouchers.findIndex(x => x.id === v.id);
+  if (idx >= 0) { vouchers[idx].blocked = false; saveLocal(); }
+
+  toast('✅ Déblocage MAC ' + mac + ' envoyé au routeur', 'ok');
+}
+
+// Helpers bas niveau
+async function sendRouterXML(base, b64, path, body) {
+  try {
+    await Promise.race([
+      fetch(base + path, {
+        method: 'POST', mode: 'no-cors', credentials: 'include',
+        headers: { 'Content-Type': 'application/xml', 'Authorization': 'Basic ' + b64 },
+        body
+      }),
+      new Promise((_, r) => setTimeout(() => r(), 2000))
+    ]);
+  } catch(e) {}
+}
+
+async function sendRouterForm(base, b64, path, body) {
+  try {
+    await Promise.race([
+      fetch(base + path, {
+        method: 'POST', mode: 'no-cors', credentials: 'include',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': 'Basic ' + b64 },
+        body
+      }),
+      new Promise((_, r) => setTimeout(() => r(), 2000))
+    ]);
+  } catch(e) {}
+}
+// ═══════════════════════════════════════════════
+async function tryFlyboxCut(code) {
+  const saved = JSON.parse(localStorage.getItem('fbx_admin') || '{}');
+  const base  = (saved.url || 'http://192.168.1.1').replace(/\/$/, '');
+  const user  = saved.user || 'admin';
+  const pass  = saved.pass || 'dYg75v3k';
+  const b64   = btoa(user + ':' + pass);
+  toast('✂️ Coupure WiFi → CP02 (' + (code ? code.slice(-8) : 'manuel') + ')', 'info');
+  const endpoints = [
+    { url: base + '/api/wlan/basic-settings', method: 'POST',
+      body: '<?xml version="1.0" encoding="UTF-8"?><request><WifiEnable>0</WifiEnable><WifiStatus>0</WifiStatus></request>',
+      ctype: 'application/xml' },
+    { url: base + '/api/device/control', method: 'POST',
+      body: '<?xml version="1.0" encoding="UTF-8"?><request><Control>1</Control></request>',
+      ctype: 'application/xml' },
+    { url: base + '/goform/setWifi', method: 'POST',
+      body: 'wifiEnable=0&wifiSsidBroadcast=1&GO=wifi_setting.asp',
+      ctype: 'application/x-www-form-urlencoded' },
+    { url: base + '/cgi-bin/luci/;stok=/rpc/xqsystem/wifi_off', method: 'GET', body: null, ctype: null }
+  ];
+  let sent = false;
+  for (const ep of endpoints) {
+    try {
+      const headers = { 'Authorization': 'Basic ' + b64 };
+      if (ep.ctype) headers['Content-Type'] = ep.ctype;
+      await Promise.race([
+        fetch(ep.url, { method: ep.method, mode: 'no-cors', credentials: 'include', headers, body: ep.body || undefined }),
+        new Promise((_, r) => setTimeout(() => r(new Error('to')), 2500))
+      ]);
+      toast('⚡ CP02 → ' + ep.url.replace(base, '') + ' envoyé', 'ok');
+      sent = true; break;
+    } catch(e) {}
+  }
+  if (!sent) {
+    toast('❌ Coupure échouée — ouverture interface admin CP02', 'err');
+    setTimeout(() => window.open(saved.url || 'http://192.168.1.1', '_blank'), 500);
+  }
+}
+async function cutAllFlybox() {
+  const actifs = vouchers.filter(v => v.statut === 'Utilisé');
+  if (!actifs.length) { toast('Aucune session active à couper', ''); return; }
+  if (!confirm('Tenter de couper le WiFi Flybox pour ' + actifs.length + ' session(s) active(s) ?')) return;
+  for (const v of actifs) await tryFlyboxCut(v.id);
+}
+
+// ═══════════════════════════════════════════════
+//  MONITOR BAR — surveillance globale
+// ═══════════════════════════════════════════════
+function updateMonitorBar() {
+  if (!isAdmin) return;
+  const actifs = vouchers.filter(v => v.statut === 'Utilisé' && v.activated);
+  const bar    = document.getElementById('monitorBar');
+  const ticker = document.getElementById('monitorTicker');
+  if (!bar || !ticker) return;
+
+  if (!actifs.length) {
+    bar.classList.remove('visible');
+    return;
+  }
+  bar.classList.add('visible');
+
+  ticker.innerHTML = actifs.map(v => {
+    const totalSec   = calcTotalSeconds(v);
+    const activated  = parsefrFR(v.activated);
+    const elapsed    = activated ? Math.floor((Date.now() - activated) / 1000) : 0;
+    const remaining  = Math.max(0, totalSec - elapsed);
+    const warn       = remaining < 300;
+    const expired    = remaining === 0;
+    const cls        = expired ? 'dead' : warn ? 'warn' : 'ok';
+    const hh = String(Math.floor(remaining/3600)).padStart(2,'0');
+    const mm = String(Math.floor((remaining%3600)/60)).padStart(2,'0');
+    const ss = String(remaining%60).padStart(2,'0');
+    const label = expired ? 'Expiré' : hh+':'+mm+':'+ss;
+    return `<div class="monitor-chip ${cls}" title="${v.id}">
+      <div class="monitor-dot ${cls}"></div>
+      <span style="font-family:'DM Mono',monospace">${v.id.slice(-8)}</span>
+      <span style="opacity:.7">· ${v.plan}</span>
+      <strong>${label}</strong>
+    </div>`;
+  }).join('');
+
+  // Vérifier expirations
+  actifs.forEach(v => {
+    const totalSec  = calcTotalSeconds(v);
+    const activated = parsefrFR(v.activated);
+    if (!activated) return;
+    const remaining = Math.max(0, totalSec - Math.floor((Date.now() - activated)/1000));
+    if (remaining === 0 && !alertedCodes.has(v.id)) onTicketExpired(v);
+    if (remaining > 0 && remaining <= 300)           onTicketWarning(v);
+  });
+}
+
+function startMonitor() {
+  if (monitorTimer) clearInterval(monitorTimer);
+  monitorTimer = setInterval(() => { if (isAdmin) updateMonitorBar(); }, 5000);
+}
+
+
+function loadAdminFlyboxUI() {
+  const saved   = JSON.parse(localStorage.getItem('fbx_admin') || 'null');
+  const defUrl  = 'http://192.168.1.1';
+  const defUser = 'admin';
+  const defPass = 'dYg75v3k';
+  const url  = (saved && saved.url)  || defUrl;
+  const user = (saved && saved.user) || defUser;
+  const pass = (saved && saved.pass) || defPass;
+  if (document.getElementById('hsAdminUrl'))  document.getElementById('hsAdminUrl').value          = url;
+  if (document.getElementById('flyboxAdminLink')) document.getElementById('flyboxAdminLink').href   = url;
+  const host = url.replace(/^https?:\/\//, '').split('/')[0];
+  if (document.getElementById('flyboxUrlRecap'))  document.getElementById('flyboxUrlRecap').textContent  = host;
+  if (document.getElementById('hsAdminUser'))     document.getElementById('hsAdminUser').textContent     = user;
+  if (document.getElementById('hsAdminPass'))     document.getElementById('hsAdminPass').textContent     = pass;
+  if (document.getElementById('hsAdminUserEdit')) document.getElementById('hsAdminUserEdit').value       = user;
+  if (document.getElementById('hsAdminPassEdit')) document.getElementById('hsAdminPassEdit').value       = pass;
+  const hsLocal = JSON.parse(localStorage.getItem('fbx_hotspot') || 'null');
+  if (document.getElementById('flyboxSsidRecap'))
+    document.getElementById('flyboxSsidRecap').textContent = (hsLocal && hsLocal.hsSsid) || HS_DEVICE_DEFAULTS.hsSsid;
+  if (document.getElementById('flyboxMacRecap'))
+    document.getElementById('flyboxMacRecap').textContent  = (hsLocal && hsLocal.hsMac)  || HS_DEVICE_DEFAULTS.hsMac;
+}
+
+function saveAdminUrl() {
+  const url = document.getElementById('hsAdminUrl').value.trim();
+  if (!url) { toast('Entrez une URL valide', 'err'); return; }
+  document.getElementById('flyboxAdminLink').href = url;
+  const host = url.replace(/^https?:\/\//, '').split('/')[0];
+  document.getElementById('flyboxUrlRecap').textContent = host;
+  const saved = JSON.parse(localStorage.getItem('fbx_admin') || '{}');
+  saved.url = url;
+  localStorage.setItem('fbx_admin', JSON.stringify(saved));
+  toast('✅ URL admin mémorisée', 'ok');
+}
+
+function toggleAdminCreds(btn) {
+  const body = document.getElementById('adminCredsBody');
+  const visible = body.style.display !== 'none';
+  body.style.display = visible ? 'none' : 'block';
+  btn.textContent = visible ? '👁 Afficher' : '🙈 Masquer';
+}
+
+function saveAdminCreds() {
+  const user = document.getElementById('hsAdminUserEdit').value.trim() || 'admin';
+  const pass = document.getElementById('hsAdminPassEdit').value.trim() || 'admin';
+  document.getElementById('hsAdminUser').textContent = user;
+  document.getElementById('hsAdminPass').textContent = pass;
+  const saved = JSON.parse(localStorage.getItem('fbx_admin') || '{}');
+  saved.user = user; saved.pass = pass;
+  localStorage.setItem('fbx_admin', JSON.stringify(saved));
+  toast('✅ Identifiants sauvegardés en local', 'ok');
+}
+
+async function pingFlybox() {
+  const dot   = document.getElementById('flyboxPingDot');
+  const label = document.getElementById('flyboxPingLabel');
+  const url   = document.getElementById('hsAdminUrl').value.trim() || 'http://192.168.1.1';
+
+  dot.style.background  = 'var(--gold)';
+  dot.style.boxShadow   = '0 0 6px rgba(201,168,76,.6)';
+  label.style.color     = 'var(--gold)';
+  label.textContent     = 'Test…';
+
+  const t0 = Date.now();
+  try {
+    // On tente un fetch no-cors — si le routeur répond, la promesse résout
+    await Promise.race([
+      fetch(url, {mode:'no-cors', cache:'no-store'}),
+      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 3000))
+    ]);
+    const ms = Date.now() - t0;
+    dot.style.background = '#27AE60';
+    dot.style.boxShadow  = '0 0 8px rgba(39,174,96,.7)';
+    label.style.color    = '#27AE60';
+    label.textContent    = 'En ligne · ' + ms + 'ms';
+    toast('✅ Flybox joignable (' + ms + ' ms)', 'ok');
+  } catch (e) {
+    dot.style.background = 'var(--err)';
+    dot.style.boxShadow  = '0 0 8px rgba(192,57,43,.6)';
+    label.style.color    = '#E74C3C';
+    label.textContent    = 'Hors ligne';
+    toast('❌ Flybox non joignable — vérifiez l\'IP ou la connexion', 'err');
+  }
+}
+
+
+const HS_FIELDS = [
+  'hsSsid','hsPass','hsBande','hsCanal','hsSec',
+  'hsGateway','hsDhcpStart','hsDhcpEnd','hsDns1','hsDns2','hsDhcpLease',
+  'hsMaxMbps','hsMaxClients','hsOperateur','hsPortal',
+  'hsModele','hsMac','hsZone','hsNotes'
+];
+const HS_TOGGLES = ['hsIsolation','hsBroadcast','hsFirewall'];
+
+function hsGet() {
+  const d = {};
+  HS_FIELDS.forEach(id => { d[id] = document.getElementById(id)?.value || ''; });
+  HS_TOGGLES.forEach(id => { d[id] = document.getElementById(id)?.checked ?? true; });
+  return d;
+}
+
+function hsSet(d) {
+  if (!d) return;
+  HS_FIELDS.forEach(id => { const el = document.getElementById(id); if (el && d[id] !== undefined) el.value = d[id]; });
+  HS_TOGGLES.forEach(id => { const el = document.getElementById(id); if (el && d[id] !== undefined) el.checked = d[id]; });
+}
+
+const HS_DEVICE_DEFAULTS = {
+  hsSsid:      'Flybox-A0B9E6',
+  hsPass:      '',
+  hsBande:     '2.4+5GHz',
+  hsCanal:     'Auto',
+  hsSec:       'Ouvert',
+  hsGateway:   '192.168.1.1',
+  hsDhcpStart: '192.168.1.10',
+  hsDhcpEnd:   '192.168.1.99',
+  hsDns1:      '8.8.8.8',
+  hsDns2:      '8.8.4.4',
+  hsDhcpLease: '1440',
+  hsMaxMbps:   '',
+  hsMaxClients:'',
+  hsOperateur: 'Orange Guinée — Conakry',
+  hsPortal:    '',
+  hsModele:    'Orange Flybox 4G CP02',
+  hsMac:       'FC:3F:FC:A0:B9:E6',
+  hsZone:      '',
+  hsNotes:     'IMEI : 860501053490906\nS/N  : CP02860501053490906\nMode : Portail captif — WiFi ouvert, accès contrôlé par voucher',
+  hsIsolation: true,
+  hsBroadcast: true,
+  hsFirewall:  true
+};
+
+function loadHotspotUI() {
+  const local = JSON.parse(localStorage.getItem('fbx_hotspot') || 'null');
+  // Merge defaults → saved (saved prend le dessus)
+  hsSet(Object.assign({}, HS_DEVICE_DEFAULTS, local || {}));
+  updateStrength();
+  updateHsPreview();
+  loadAdminFlyboxUI();
+}
+
+async function saveHotspot() {
+  const d = hsGet();
+  localStorage.setItem('fbx_hotspot', JSON.stringify(d));
+  if (sbClient) {
+    const row = {
+      id:'main',
+      ssid: d.hsSsid, password: d.hsPass, bande: d.hsBande,
+      canal: d.hsCanal, securite: d.hsSec, gateway: d.hsGateway,
+      dhcp_start: d.hsDhcpStart, dhcp_end: d.hsDhcpEnd,
+      dns1: d.hsDns1, dns2: d.hsDns2,
+      dhcp_lease: parseInt(d.hsDhcpLease) || 1440,
+      max_mbps: parseInt(d.hsMaxMbps) || null,
+      max_clients: parseInt(d.hsMaxClients) || null,
+      operateur: d.hsOperateur, portal_url: d.hsPortal,
+      isolation: d.hsIsolation, broadcast: d.hsBroadcast, firewall: d.hsFirewall,
+      modele: d.hsModele, mac_address: d.hsMac, zone: d.hsZone, notes: d.hsNotes,
+      updated_at: new Date().toISOString()
+    };
+    const {error} = await sbClient.from('hotspot_config').upsert(row, {onConflict:'id'});
+    if (error) { toast('⚠️ Supabase hotspot : ' + error.message, 'err'); return; }
+    toast('☁️ Config hotspot sauvegardée dans Supabase', 'ok');
+  } else {
+    toast('✅ Config hotspot sauvegardée en local', 'ok');
+  }
+  updateHsPreview();
+}
+
+function updateStrength() {
+  const pass = document.getElementById('hsPass')?.value || '';
+  const colors = ['#E74C3C','#E67E22','#F1C40F','#27AE60'];
+  const labels = ['Très faible','Faible','Moyen','Fort'];
+  let score = 0;
+  if (pass.length >= 8)  score++;
+  if (pass.length >= 12) score++;
+  if (/[A-Z]/.test(pass) && /[0-9]/.test(pass)) score++;
+  if (/[^A-Za-z0-9]/.test(pass)) score++;
+  score = Math.min(3, score);
+  for (let i = 0; i < 4; i++) {
+    const seg = document.getElementById('sb' + i);
+    if (seg) seg.style.background = i <= score && pass ? colors[score] : 'var(--obs5)';
+  }
+  const lbl = document.getElementById('strengthLabel');
+  if (lbl) lbl.textContent = pass ? labels[score] : '—';
+}
+
+function togglePassVis(id, btn) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.type = el.type === 'password' ? 'text' : 'password';
+  btn.textContent = el.type === 'password' ? '👁' : '🙈';
+}
+
+function updateHsPreview() {
+  const ssid   = document.getElementById('hsSsid')?.value   || '—';
+  const sec    = document.getElementById('hsSec')?.value    || 'WPA2-PSK';
+  const gw     = document.getElementById('hsGateway')?.value || '—';
+  const bande  = document.getElementById('hsBande')?.value  || '—';
+  const zone   = document.getElementById('hsZone')?.value   || '';
+  const op     = document.getElementById('hsOperateur')?.value || 'Orange Guinée';
+
+  // Header
+  const ficheZone = document.getElementById('hsFicheZone');
+  if (ficheZone) ficheZone.textContent = zone || 'Aucune zone définie';
+
+  const ficheSec = document.getElementById('hsFicheSec');
+  if (ficheSec) {
+    ficheSec.textContent = sec;
+    ficheSec.className   = 'hs-badge ' + (sec === 'Ouvert' ? 'warn' : 'ok');
+  }
+
+  const ficheSsid = document.getElementById('hsFicheSsid');
+  if (ficheSsid) ficheSsid.textContent = ssid;
+
+  // Rows
+  const rows = [
+    {k:'Passerelle IP', v: gw},
+    {k:'Bande',         v: bande},
+    {k:'Sécurité',      v: sec},
+    {k:'DNS',           v: (document.getElementById('hsDns1')?.value || '8.8.8.8') + ' / ' + (document.getElementById('hsDns2')?.value || '8.8.4.4')},
+    {k:'Débit max',     v: (document.getElementById('hsMaxMbps')?.value ? document.getElementById('hsMaxMbps').value + ' Mbps/client' : 'Illimité')},
+    {k:'Clients max',   v: document.getElementById('hsMaxClients')?.value || '—'},
+  ];
+  const ficheRows = document.getElementById('hsFicheRows');
+  if (ficheRows) ficheRows.innerHTML = rows.map(r =>
+    `<div class="hs-fiche-row"><span class="hs-fiche-key">${r.k}</span><span class="hs-fiche-val">${r.v}</span></div>`
+  ).join('');
+
+  // QR code WiFi (format WIFI:T:WPA;S:ssid;P:pass;;)
+  const pass   = document.getElementById('hsPass')?.value || '';
+  const qrData = sec === 'Ouvert'
+    ? 'WIFI:T:nopass;S:' + encodeURIComponent(ssid) + ';;'
+    : 'WIFI:T:WPA;S:' + encodeURIComponent(ssid) + ';P:' + encodeURIComponent(pass) + ';;';
+  const qrURL  = 'https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=' + encodeURIComponent(qrData) + '&color=C9A84C&bgcolor=0F0F13&margin=6';
+  const ficheQr = document.getElementById('hsFicheQr');
+  if (ficheQr) ficheQr.src = qrURL;
+
+  const ficheOp   = document.getElementById('hsFicheOp');
+  const ficheDate = document.getElementById('hsFicheDate');
+  if (ficheOp)   ficheOp.textContent   = op;
+  if (ficheDate) ficheDate.textContent = 'Mis à jour : ' + new Date().toLocaleDateString('fr-FR');
+}
+
+function printHotspotFiche() {
+  // Masquer tout sauf la fiche
+  document.querySelectorAll('.hs-noprint').forEach(el => el.classList.add('_hsHide'));
+  document.getElementById('hsFiche').classList.add('hs-print-only');
+  window.print();
+  setTimeout(() => {
+    document.querySelectorAll('._hsHide').forEach(el => el.classList.remove('_hsHide'));
+    document.getElementById('hsFiche').classList.remove('hs-print-only');
+  }, 1000);
+}
+
+function copyHsSQL() {
+  const sql = document.querySelector('#viewHotspot .sql-block').textContent;
+  navigator.clipboard.writeText(sql)
+    .then(() => toast('✅ SQL hotspot copié', 'ok'))
+    .catch(() => toast('Sélectionnez manuellement le SQL', 'err'));
+}
+
+// ─── Charger config hotspot depuis Supabase au démarrage si connecté ───
+async function loadHotspotFromDB() {
+  if (!sbClient) return;
+  try {
+    const {data, error} = await sbClient.from('hotspot_config').select('*').eq('id','main').single();
+    if (error || !data) return;
+    const map = {
+      hsSsid:d=>d.ssid, hsPass:d=>d.password, hsBande:d=>d.bande,
+      hsCanal:d=>d.canal, hsSec:d=>d.securite, hsGateway:d=>d.gateway,
+      hsDhcpStart:d=>d.dhcp_start, hsDhcpEnd:d=>d.dhcp_end,
+      hsDns1:d=>d.dns1, hsDns2:d=>d.dns2, hsDhcpLease:d=>d.dhcp_lease,
+      hsMaxMbps:d=>d.max_mbps, hsMaxClients:d=>d.max_clients,
+      hsOperateur:d=>d.operateur, hsPortal:d=>d.portal_url,
+      hsModele:d=>d.modele, hsMac:d=>d.mac_address,
+      hsZone:d=>d.zone, hsNotes:d=>d.notes,
+      hsIsolation:d=>d.isolation, hsBroadcast:d=>d.broadcast, hsFirewall:d=>d.firewall
+    };
+    const local = {};
+    Object.entries(map).forEach(([k,fn]) => { local[k] = fn(data); });
+    localStorage.setItem('fbx_hotspot', JSON.stringify(local));
+  } catch(e) {}
+}
+
+// Injecter l'appel dans connectSupabase existant (patch post-connect)
+const _origConnect = connectSupabase;
+async function connectSupabase(url, key) {
+  await _origConnect(url, key);
+  await loadHotspotFromDB();
+}
+
+// ═══════════════════════════════════════════════
+//  PWA — Manifest · Service Worker · Cache · Install
+// ═══════════════════════════════════════════════
+
+const PWA_CACHE   = 'flybox-v13';
+let   pwaPrompt   = null;  // beforeinstallprompt event
+
+// ── Icône SVG encodée ──
+const PWA_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#FF7020"/><stop offset="1" stop-color="#A03000"/>
+  </linearGradient></defs>
+  <rect width="512" height="512" rx="110" fill="url(#g)"/>
+  <circle cx="256" cy="330" r="38" fill="white"/>
+  <path d="M170 255 Q256 190 342 255" stroke="white" stroke-width="34" fill="none" stroke-linecap="round"/>
+  <path d="M110 195 Q256 110 402 195" stroke="white" stroke-width="34" fill="none" stroke-linecap="round"/>
+  <path d="M60 140 Q256 40 452 140" stroke="rgba(255,255,255,.35)" stroke-width="30" fill="none" stroke-linecap="round"/>
+  <text x="256" y="470" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="88" font-weight="900" fill="rgba(255,255,255,.18)" letter-spacing="4">FBX</text>
+</svg>`;
+const PWA_ICON_URL = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(PWA_ICON_SVG);
+
+// ── 1. Injecter le Manifest dynamiquement ──
+function injectManifest() {
+  const manifest = {
+    name:             'Flybox Vouchers — Orange Guinée',
+    short_name:       'Flybox',
+    description:      'Gestion de vouchers WiFi Flybox · Orange Guinée · HABATECH',
+    start_url:        window.location.href,
+    display:          'standalone',
+    orientation:      'portrait-primary',
+    background_color: '#EDEAE2',
+    theme_color:      '#D94F00',
+    lang:             'fr',
+    categories:       ['utilities', 'business'],
+    icons: [
+      { src: PWA_ICON_URL, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
+      { src: PWA_ICON_URL, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], {type: 'application/manifest+json'});
+  const url  = URL.createObjectURL(blob);
+  const link = document.createElement('link');
+  link.rel   = 'manifest';
+  link.href  = url;
+  document.head.appendChild(link);
+}
+
+// ── 2. Service Worker (cache-first + network fallback) ──
+const SW_CODE = `
+const CACHE = '${PWA_CACHE}';
+
+// Ressources CDN à pré-cacher
+const CDN = [
+  'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap',
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js',
+  'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js',
+  'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js'
+];
+
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE).then(c => {
+      // Pré-cacher les CDN (on ignore les erreurs si offline à l'install)
+      return Promise.allSettled(CDN.map(url => c.add(url).catch(() => {})));
+    }).then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(
+        keys.filter(k => k !== CACHE).map(k => caches.delete(k))
+      ))
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', e => {
+  const url = e.request.url;
+
+  // Fonts Google : cache-first
+  if (url.includes('fonts.googleapis') || url.includes('fonts.gstatic')) {
+    e.respondWith(
+      caches.match(e.request).then(cached => {
+        if (cached) return cached;
+        return fetch(e.request).then(res => {
+          caches.open(CACHE).then(c => c.put(e.request, res.clone()));
+          return res;
+        }).catch(() => cached || new Response('', {status: 503}));
+      })
+    );
+    return;
+  }
+
+  // CDN JS (Supabase, Firebase) : cache-first, réseau en fallback
+  if (url.includes('jsdelivr') || url.includes('gstatic') || url.includes('qrserver')) {
+    e.respondWith(
+      caches.match(e.request).then(cached => {
+        if (cached) return cached;
+        return fetch(e.request).then(res => {
+          if (res.ok) caches.open(CACHE).then(c => c.put(e.request, res.clone()));
+          return res;
+        }).catch(() => cached || new Response('', {status: 503}));
+      })
+    );
+    return;
+  }
+
+  // App HTML (le fichier lui-même) : network-first, cache en fallback offline
+  if (e.request.mode === 'navigate' || e.request.destination === 'document') {
+    e.respondWith(
+      fetch(e.request).then(res => {
+        if (res.ok) caches.open(CACHE).then(c => c.put(e.request, res.clone()));
+        return res;
+      }).catch(() => caches.match(e.request).then(c => c || caches.match('/__flybox_shell')))
+    );
+    return;
+  }
+
+  // Tout le reste : réseau direct
+  e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+});
+
+// Message depuis la page pour mettre à jour le cache de l'app
+self.addEventListener('message', e => {
+  if (e.data && e.data.type === 'CACHE_SELF') {
+    caches.open(CACHE).then(c => {
+      fetch(e.data.url).then(res => {
+        if (res.ok) c.put(e.data.url, res);
+      }).catch(() => {});
+    });
+  }
+});
+`;
+
+async function registerSW() {
+  if (!('serviceWorker' in navigator)) return;
+  try {
+    // Créer un blob SW avec le bon type MIME
+    const blob   = new Blob([SW_CODE], {type: 'text/javascript'});
+    const swUrl  = URL.createObjectURL(blob);
+    const reg    = await navigator.serviceWorker.register(swUrl, {scope: './'});
+
+    // Mettre en cache le fichier HTML courant
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: 'CACHE_SELF',
+        url:  window.location.href
+      });
+    }
+
+    reg.addEventListener('updatefound', () => {
+      const sw = reg.installing;
+      sw && sw.addEventListener('statechange', () => {
+        if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+          toast('🔄 Mise à jour disponible — rechargez la page', 'info');
+        }
+      });
+    });
+
+    console.log('[PWA] Service Worker enregistré');
+  } catch(e) {
+    // Blob SW scope limité sur certains navigateurs — on utilise Cache API directement
+    cacheSelfDirect();
+  }
+}
+
+// Fallback : mettre en cache le HTML directement depuis la page
+async function cacheSelfDirect() {
+  if (!('caches' in window)) return;
+  try {
+    const cache = await caches.open(PWA_CACHE);
+    const res   = await fetch(window.location.href);
+    if (res.ok) await cache.put(window.location.href, res);
+    // Cacher aussi les CDN
+    const cdns = [
+      'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js',
+      'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js',
+      'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js'
+    ];
+    await Promise.allSettled(cdns.map(url =>
+      fetch(url).then(r => r.ok ? cache.put(url, r) : null).catch(() => {})
+    ));
+  } catch(e) {}
+}
+
+// ── 3. Install prompt ──
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  pwaPrompt = e;
+  document.getElementById('pwaInstallBtn')?.classList.add('visible');
+  // Afficher banner sur mobile
+  if (window.innerWidth < 640 && !localStorage.getItem('pwa_dismissed')) {
+    setTimeout(() => document.getElementById('pwaBanner')?.classList.add('visible'), 2000);
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  pwaPrompt = null;
+  document.getElementById('pwaInstallBtn')?.classList.remove('visible');
+  document.getElementById('pwaBanner')?.classList.remove('visible');
+  toast('✅ Flybox Vouchers installé avec succès !', 'ok');
+  localStorage.setItem('pwa_installed', '1');
+});
+
+async function pwaInstall() {
+  if (!pwaPrompt) {
+    toast('💡 Sur Chrome/Edge : Menu ⋮ → "Installer l\'application"', 'info');
+    return;
+  }
+  pwaPrompt.prompt();
+  const { outcome } = await pwaPrompt.userChoice;
+  if (outcome === 'accepted') {
+    pwaPrompt = null;
+    document.getElementById('pwaInstallBtn')?.classList.remove('visible');
+    document.getElementById('pwaBanner')?.classList.remove('visible');
+  }
+}
+
+function pwaDismiss() {
+  document.getElementById('pwaBanner')?.classList.remove('visible');
+  localStorage.setItem('pwa_dismissed', '1');
+}
+
+// ── 4. Lancer la PWA ──
+function initPWA() {
+  injectManifest();
+  registerSW();
+  // Si déjà installé, masquer le bouton
+  if (window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true) {
+    document.getElementById('pwaInstallBtn')?.classList.remove('visible');
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  START
+// ═══════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>
